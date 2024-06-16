@@ -42,12 +42,12 @@ app.UseStaticFiles();
 
 
 // Configure additional static files middleware to serve from a different directory
-var externalStaticFilesPath = Path.Combine(Directory.GetCurrentDirectory(), "Views");
-app.UseStaticFiles(new StaticFileOptions
-{
-    FileProvider = new PhysicalFileProvider(externalStaticFilesPath),
-    RequestPath = "/Views"
-});
+//var externalStaticFilesPath = Path.Combine(Directory.GetCurrentDirectory(), "Views");
+//app.UseStaticFiles(new StaticFileOptions
+//{
+//    FileProvider = new PhysicalFileProvider(externalStaticFilesPath),
+//    RequestPath = "/Viewss"
+//});
 
 
 app.UseRouting();

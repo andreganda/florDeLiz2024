@@ -7,6 +7,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="wwwroot\Views\Cliente\Js\Create.js" />
+    <Content Remove="wwwroot\Views\Parcelas\Js\Index.js" />
+    <Content Remove="wwwroot\Views\Vendas\Js\Create\Create.js" />
+    <Content Remove="wwwroot\Views\Vendas\Js\Create\Finalizacao.js" />
+    <Content Remove="wwwroot\Views\Vendas\Js\Create\Salvar.js" />
+    <Content Remove="wwwroot\Views\Vendas\Js\Create\Validacao.js" />
+    <Content Remove="wwwroot\Views\Vendas\Js\Index\Index.js" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.20" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="7.0.20">
       <PrivateAssets>all</PrivateAssets>
@@ -14,6 +24,16 @@
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="7.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\Views\Cliente\Js\Create.js" />
+    <None Include="wwwroot\Views\Parcelas\Js\Index.js" />
+    <None Include="wwwroot\Views\Vendas\Js\Create\Create.js" />
+    <None Include="wwwroot\Views\Vendas\Js\Create\Finalizacao.js" />
+    <None Include="wwwroot\Views\Vendas\Js\Create\Salvar.js" />
+    <None Include="wwwroot\Views\Vendas\Js\Create\Validacao.js" />
+    <None Include="wwwroot\Views\Vendas\Js\Index\Index.js" />
   </ItemGroup>
 
 </Project>
