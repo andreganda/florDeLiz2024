@@ -1,0 +1,189 @@
+﻿@using static flordelizHemilly.Controllers.VendasController
+@model IEnumerable<flordelizHemilly.Models.Venda>
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var listaSelect = ViewData["ListaSeletFiltro"] as List<ItensSelectStatus>;
+ 
+    var startDate = ViewData["StartDate"] as string;
+    var endDate = ViewData["EndDate"] as string;
+    var status = ViewData["status"] as string;
+}
+
+<style>
+    .btnOpcao{
+
+        height:20px;
+        text-align:center;
+    }
+</style>
+
+<h1>Lista de vendas</h1>
+
+<div class="card card-custom gutter-b">
+    <div class="card-header">
+        <div class="card-title">
+            <h3 class="card-label">
+                Filtros Pesquisa
+                <small>sub title</small>
+            </h3>
+        </div>
+    </div>
+    <div class="card-body">
+        <form method="get" asp-controller="Vendas" asp-action="Index">
+
+            <div class="form-group row">
+                <div class="col-lg-12">
+                <label class="control-label">Cliente</label>
+                    <select class="form-control" id="idCliente" name="idCliente" asp-items="ViewBag.ClienteId"></select>
+            </div>
+            </div>
+
+            <div class="form-group row">
+                <div class="col-lg-4">
+                    <label>Data Inicio:</label>
+                    <input type="date" class="form-control" id="startDate" name="startDate" value="@startDate">
+                    <span class="form-text text-muted">Data inicio pesquisa</span>
+                </div>
+                <div class="col-lg-4">
+                    <label>Data fim:</label>
+                    <input type="date" class="form-control" id="endDate" name="endDate" value="@endDate">
+                    <span class="form-text text-muted">Data fim pesquisa</span>
+                </div>
+                <div class="col-lg-4">
+                    <label>Status:</label>
+                    <select id="status" name="status" class="form-control">
+                        @foreach (var item in listaSelect)
+                        {
+                            @if (item.Value.ToString() == status)
+                            {
+                                <option selected="selected" value="@item.Value"> @item.Descricao </option>
+                            }
+                            else
+                            {
+                                <option value="@item.Value"> @item.Descricao </option>
+                            }
+                        }
+                    </select>
+                    <span class="form-text text-muted">Please enter your username</span>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-lg-4">
+                    <button class="btn btn-success btn-shadow font-weight-bold mr-2" type="submit">Filtrar</button>
+                </div>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<div class="card card-custom gutter-b">
+    <div class="card-header">
+        <div class="card-title">
+            <h3 class="card-label">
+                Vendas
+                <small>Lista de vendas</small>
+            </h3>
+        </div>
+    </div>
+    <div class="card-body">
+        <p>
+            <a asp-action="Create">Nova venda</a>
+        </p>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th> Protocolo </th>
+                    <th> Data da compra</th>
+                    <th>
+                        N° de parcelas
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Cliente)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Total)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Entrada)
+                    </th>
+                    <th>
+                        Tipo Pagamento
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Status)
+                    </th>
+                    <th>
+                       
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @item.Id
+                        </td> <td>
+                            @item.DataDaVenda.Date.ToShortDateString()
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.NumeroParcelas)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Cliente.Nome)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Total)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Entrada)
+                        </td>
+                        <td>
+                            @if (item.TipoPagamento == 1)
+                            {
+                                <p>Parcelado</p>
+                            }
+                            else
+                            {
+                                <p>A vista</p>
+                            }
+                        </td>
+                        <td>
+                            @if (item.Status == 1)
+                            {
+                                <span class="label label-md label-success label-inline mr-2">Pago</span>
+                            }
+                            else
+                            {
+                                <span class="label label-md label-danger label-inline mr-2">Pendente</span>
+                            }
+                        </td>
+
+                        <td>
+                            <a > <span class="label label-md label-success label-inline mr-2">Itens</span></a>
+                            @if (item.TipoPagamento == 1)
+                            {
+                                <a asp-controller="Parcelas" asp-action="Index" asp-route-id="@item.Id"> <span class="label label-md label-warning label-inline mr-2">Parcelas</span></a>
+                            }
+                          
+                        </td>
+
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+    </div>
+</div>
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+        <script src="/Views/Vendas/Js/Index/Index.js"></script>
+    }
+}
