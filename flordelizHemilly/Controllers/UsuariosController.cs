@@ -86,12 +86,14 @@ namespace flordelizHemilly.Controllers
                 var existingUser = _context.Usuarios.FirstOrDefault(u => u.Email == usuario.Email);
                 if (existingUser != null && existingUser.Id != usuario.Id)
                 {
+                    //retirando entidade do contexto
+                    _context.Entry(existingUser).State = EntityState.Detached;
+
                     ModelState.AddModelError("", "Esse email ja existe.");
                     return View("Create", usuario);
                 }
 
-                //retirando entidade do contexto
-                _context.Entry(existingUser).State = EntityState.Detached;
+
 
                 if (usuario.Id == 0)
                 {
