@@ -40,7 +40,7 @@ namespace flordelizHemilly.Models
         [DefaultValue(1)]
         public int Status { get; set; }
 
-        public int? LojaId { get; set; }
-        public Loja Loja { get; set; }
+        public int LojaId { get; set; }
+        public Loja? Loja { get; set; }
     }
 }

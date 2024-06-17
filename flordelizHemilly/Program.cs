@@ -1,12 +1,22 @@
 using flordelizHemilly.DataBase;
-using flordelizHemilly.DataBase;
 using flordelizHemilly.Service;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+
+// Adicionar serviços de autenticação
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/Auth/Login"; // Rota para a página de login
+        options.LogoutPath = "/Auth/Logout"; // Rota para a página de logout
+        options.AccessDeniedPath = "/Auth/AccessDenied"; // Rota para a página de acesso negado
+    });
+
+// Add services to the container.   
 builder.Services.AddControllersWithViews();
 
 
@@ -23,11 +33,8 @@ builder.Services.AddScoped<IItemVendaService, ItemVendaService>();
 builder.Services.AddScoped<IParcelaService, ParcelaService>();
 
 
-
-
-
-
 var app = builder.Build();
+
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -39,19 +46,9 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
-
-// Configure additional static files middleware to serve from a different directory
-//var externalStaticFilesPath = Path.Combine(Directory.GetCurrentDirectory(), "Views");
-//app.UseStaticFiles(new StaticFileOptions
-//{
-//    FileProvider = new PhysicalFileProvider(externalStaticFilesPath),
-//    RequestPath = "/Viewss"
-//});
-
-
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(

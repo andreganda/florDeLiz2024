@@ -54,6 +54,7 @@ namespace flordelizHemilly.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([FromForm] Cliente cliente)
         {
+            cliente.LojaId = 1;
             if (ModelState.IsValid)
             {
 
