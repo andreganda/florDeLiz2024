@@ -11,5 +11,7 @@ namespace flordelizHemilly.DataBase
         public DbSet<Venda> Vendas { get; set; }
         public DbSet<ItemVenda> ItemVendas { get; set; }
         public DbSet<Parcela> Parcelas { get; set; }
+        public DbSet<Loja> Lojas { get; set; }
+        public DbSet<Usuario> Usuarios { get; set; }
     }
 }

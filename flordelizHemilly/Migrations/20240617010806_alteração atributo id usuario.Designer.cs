@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using flordelizHemilly.DataBase;
 
@@ -10,9 +11,11 @@ using flordelizHemilly.DataBase;
 namespace flordelizHemilly.Migrations
 {
     [DbContext(typeof(FlorDeLizContext))]
-    partial class FlorDeLizContextModelSnapshot : ModelSnapshot
+    [Migration("20240617010806_alteração atributo id usuario")]
+    partial class alteraçãoatributoidusuario
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -126,12 +129,7 @@ namespace flordelizHemilly.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<int?>("UsuarioId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("UsuarioId");
 
                     b.ToTable("Lojas");
                 });
@@ -179,8 +177,7 @@ namespace flordelizHemilly.Migrations
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("varchar(100)");
+                        .HasColumnType("longtext");
 
                     b.Property<string>("Login")
                         .IsRequired()
@@ -264,13 +261,6 @@ namespace flordelizHemilly.Migrations
                     b.Navigation("Venda");
                 });
 
-            modelBuilder.Entity("flordelizHemilly.Models.Loja", b =>
-                {
-                    b.HasOne("flordelizHemilly.Models.Usuario", null)
-                        .WithMany("Loja")
-                        .HasForeignKey("UsuarioId");
-                });
-
             modelBuilder.Entity("flordelizHemilly.Models.Parcela", b =>
                 {
                     b.HasOne("flordelizHemilly.Models.Venda", "Venda")
@@ -296,11 +286,6 @@ namespace flordelizHemilly.Migrations
             modelBuilder.Entity("flordelizHemilly.Models.Cliente", b =>
                 {
                     b.Navigation("Vendas");
-                });
-
-            modelBuilder.Entity("flordelizHemilly.Models.Usuario", b =>
-                {
-                    b.Navigation("Loja");
                 });
 
             modelBuilder.Entity("flordelizHemilly.Models.Venda", b =>

@@ -11,8 +11,8 @@ using flordelizHemilly.DataBase;
 namespace flordelizHemilly.Migrations
 {
     [DbContext(typeof(FlorDeLizContext))]
-    [Migration("20240616001015_novo banco")]
-    partial class novobanco
+    [Migration("20240617005301_criação usuario 1")]
+    partial class criaçãousuario1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -59,6 +59,9 @@ namespace flordelizHemilly.Migrations
                     b.Property<string>("LocalTrabalho")
                         .HasColumnType("longtext");
 
+                    b.Property<int?>("LojaId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Nome")
                         .IsRequired()
                         .HasColumnType("longtext");
@@ -80,6 +83,8 @@ namespace flordelizHemilly.Migrations
                         .HasColumnType("longtext");
 
                     b.HasKey("ClienteID");
+
+                    b.HasIndex("LojaId");
 
                     b.ToTable("Clientes");
                 });
@@ -108,6 +113,25 @@ namespace flordelizHemilly.Migrations
                     b.HasIndex("VendaId");
 
                     b.ToTable("ItemVendas");
+                });
+
+            modelBuilder.Entity("flordelizHemilly.Models.Loja", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("Nome")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("NomeFantasia")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Loja");
                 });
 
             modelBuilder.Entity("flordelizHemilly.Models.Parcela", b =>
@@ -160,6 +184,9 @@ namespace flordelizHemilly.Migrations
                     b.Property<decimal>("Entrada")
                         .HasColumnType("decimal(65,30)");
 
+                    b.Property<int?>("LojaId")
+                        .HasColumnType("int");
+
                     b.Property<int>("NumeroParcelas")
                         .HasColumnType("int");
 
@@ -177,6 +204,15 @@ namespace flordelizHemilly.Migrations
                     b.HasIndex("ClienteId");
 
                     b.ToTable("Vendas");
+                });
+
+            modelBuilder.Entity("flordelizHemilly.Models.Cliente", b =>
+                {
+                    b.HasOne("flordelizHemilly.Models.Loja", "Loja")
+                        .WithMany()
+                        .HasForeignKey("LojaId");
+
+                    b.Navigation("Loja");
                 });
 
             modelBuilder.Entity("flordelizHemilly.Models.ItemVenda", b =>

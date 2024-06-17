@@ -10,6 +10,7 @@ using flordelizHemilly.Models;
 using flordelizHemilly.Service;
 using MySqlConnector;
 using System.Data.SqlClient;
+using static flordelizHemilly.Models.SuportClass;
 
 namespace flordelizHemilly.Controllers
 {
@@ -344,11 +345,7 @@ namespace flordelizHemilly.Controllers
             public IEnumerable<ItemVendaDto> ItensVenda { get; set; }
         }
 
-        public class ItensSelectStatus
-        {
-            public int Value { get; set; }
-            public string? Descricao { get; set; }
-        }
+
 
         public List<ItensSelectStatus> ListaSelect()
         {

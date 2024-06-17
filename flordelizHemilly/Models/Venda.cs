@@ -11,6 +11,7 @@ namespace flordelizHemilly.Models
         public Cliente Cliente { get; set; }
         public decimal Total { get; set; }
         
+        public int? LojaId { get; set; }
 
         /// <summary>
         /// Caso o cliente dê algum valor de entrada na compra para abater na criaçao 
