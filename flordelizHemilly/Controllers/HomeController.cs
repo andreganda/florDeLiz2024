@@ -1,7 +1,10 @@
 using flordelizHemilly.Models;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using System.Security.Claims;
 
 namespace flordelizHemilly.Controllers
 {
@@ -15,8 +18,12 @@ namespace flordelizHemilly.Controllers
             _logger = logger;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> IndexAsync()
         {
+            // Obtenha o ID do usuário atualmente autenticado a partir das Claims
+            string userId = User.FindFirst(ClaimTypes.Name)?.Value;
+            string idLoja = User.FindFirst(ClaimTypes.Authentication)?.Value;
+
             return View();
         }
 

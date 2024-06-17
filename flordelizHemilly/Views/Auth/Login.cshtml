@@ -1,10 +1,11 @@
 ﻿@model flordelizHemilly.Controllers.AuthController.LoginModel
 
 @{
+    Layout = null;
     ViewData["Title"] = "Login";
 }
 
-<h2>Login</h2>
+@* <h2>Login</h2>
 
 <form asp-action="Login" method="post">
     <div class="form-group">
@@ -16,4 +17,67 @@
         <input asp-for="Password" type="password" class="form-control" />
     </div>
     <button type="submit" class="btn btn-primary">Login</button>
-</form>
+</form> *@
+
+
+@{
+    ViewData["Title"] = "Login";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card mt-5">
+                    <div class="card-header">
+                        <h3>Login</h3>
+                    </div>
+                    <div class="card-body">
+                        <form asp-action="Login" method="post">
+                            <div class="form-group">
+                                <label for="username">Usuário</label>
+                                <input type="text" class="form-control" asp-for="Email" id="Email" name="Email" required />
+                            </div>
+                            <div class="form-group">
+                                <label for="password">Senha</label>
+                                <input type="password" asp-for="Senha" class="form-control" id="Senha" name="Senha" required />
+                            </div>
+                            <button type="submit" class="btn btn-primary">Login</button>
+                        </form>
+                    </div>
+                    <div class="card-footer text-muted">
+                        <p>Não tem uma conta? <a href="#">Esqueci minha senha</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <br />
+    @if (TempData["MsgErro"] != null)
+    {
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <strong>Opss!</strong> @TempData["MsgErro"]
+                    @* <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button> *@
+                </div>
+            </div>
+        </div>
+    }
+
+
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    @* <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script> *@
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

@@ -15,9 +15,9 @@ namespace flordelizHemilly.Models
         [StringLength(100)]
         public string Email { get; set; }
 
-        public string Login { get; set; }
+        public string? Login { get; set; }
 
-        public string Senha { get; set; }
+        public string? Senha { get; set; }
 
         public string LojasAcesso { get; set; }
         //public IEnumerable<Loja> Loja { get; set; }

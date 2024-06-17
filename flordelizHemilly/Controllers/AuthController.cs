@@ -1,12 +1,20 @@
-﻿using Microsoft.AspNetCore.Authentication.Cookies;
+﻿using flordelizHemilly.DataBase;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
 namespace flordelizHemilly.Controllers
 {
     public class AuthController : Controller
     {
+        private readonly FlorDeLizContext _context;
+
+        public AuthController(FlorDeLizContext context)
+        {
+            _context = context;
+        }
 
         public IActionResult Login()
         {
@@ -16,24 +24,33 @@ namespace flordelizHemilly.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(LoginModel login)
         {
-            // Aqui você pode adicionar a lógica para verificar o usuário (ex.: consultar o banco de dados)
-            if (login.Username == "test" && login.Password == "password")
+
+            var userBd = await _context.Usuarios.FirstOrDefaultAsync(a=> a.Email == login.Email && a.Senha == login.Senha);
+
+            if (userBd!=null)
             {
                 var claims = new List<Claim>
                 {
-                    new Claim(ClaimTypes.Name, login.Username)
+                    new Claim(ClaimTypes.Email, login.Email),
+                    new Claim(ClaimTypes.Authentication, "1")
                 };
 
                 var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
 
-                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
+                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
+                    new ClaimsPrincipal(claimsIdentity));
 
                 return RedirectToAction("Index", "Home");
             }
-            return Unauthorized();
+
+           
+            TempData["MsgErro"] = "Login e/ou senha inválidos";
+
+            return View();
+            //return Unauthorized();
         }
 
-        [HttpPost]
+        [HttpGet]
         public async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
@@ -42,8 +59,8 @@ namespace flordelizHemilly.Controllers
 
         public class LoginModel
         {
-            public string Username { get; set; }
-            public string Password { get; set; }
+            public string Email { get; set; }
+            public string Senha { get; set; }
         }
     }
 
