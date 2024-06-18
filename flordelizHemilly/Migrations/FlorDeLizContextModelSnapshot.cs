@@ -64,7 +64,6 @@ namespace flordelizHemilly.Migrations
                         .HasColumnType("longtext");
 
                     b.Property<string>("Observacoes")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<string>("Profissao")
