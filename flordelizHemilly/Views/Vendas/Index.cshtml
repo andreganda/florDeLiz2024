@@ -165,7 +165,9 @@
                         </td>
 
                         <td>
-                            <a > <span class="label label-md label-success label-inline mr-2">Itens</span></a>
+                            <a href="javascript:AbrirModalDetalharItens(@item.Id)">
+                                <span class="label label-md label-success label-inline mr-2">Itens</span>
+                            </a>
                             @if (item.TipoPagamento == 1)
                             {
                                 <a asp-controller="Parcelas" asp-action="Index" asp-route-id="@item.Id"> <span class="label label-md label-warning label-inline mr-2">Parcelas</span></a>
@@ -178,6 +180,37 @@
             </tbody>
         </table>
 
+    </div>
+</div>
+
+@* MODAL DETALHES *@
+<div class="modal fade" id="modal_detalhes_compra" data-backdrop="static" tabindex="-1" backs role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"> Lista de itens </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <i aria-hidden="true" class="ki ki-close"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th> Descrição </th>
+                            <th> Quantidade </th>
+                            <th> Preço Unitário </th>
+                            <th> Total </th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbodyDetalhesPagamento">
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+            </div>
+        </div>
     </div>
 </div>
 

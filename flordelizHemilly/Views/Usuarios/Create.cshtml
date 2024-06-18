@@ -79,6 +79,20 @@
                             </select>
                         </div>
 
+
+                        <div class="col-md-4">
+                            <label class="control-label">Loja que trabalha</label>
+                            <select asp-for="LojaId" class="form-control">
+                                @{
+                                    foreach (var item in listaLojas)
+                                    {
+                                        <option value="@item.Value">@item.Descricao</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+
+
                         <div class="col-md-4">
                             <div class="form-group">
                                 @if (Model.Id == 0)

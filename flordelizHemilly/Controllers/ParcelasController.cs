@@ -1,6 +1,7 @@
 ﻿using flordelizHemilly.DataBase;
 using flordelizHemilly.Models;
 using flordelizHemilly.Service;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -9,6 +10,7 @@ using System.Text;
 
 namespace flordelizHemilly.Controllers
 {
+    [Authorize]
     public class ParcelasController : Controller
     {
         private readonly FlorDeLizContext _context;
@@ -42,20 +44,22 @@ namespace flordelizHemilly.Controllers
         }
 
         [HttpPost]
-        public async Task<Mensagem> EfetuarPagamento(PagamentoParcelaViewModel venda)
+        public async Task<Mensagem> EfetuarPagamento(PagamentoParcelaViewModel v)
         {
             var m = new Mensagem();
 
             try
             {
-
-                var parcela = await _context.Parcelas.FirstOrDefaultAsync(m => m.Id == venda.IdParcela);
+                var parcela = await _context.Parcelas.FirstOrDefaultAsync(m => m.Id == v.IdParcela);
                 var historico = JsonConvert.DeserializeObject<List<ParcelaHistorico>>(parcela.Historico);
 
-                var valorPagamento = Convert.ToDecimal(venda.Valor.Replace(".", ","));
-                var dataPagamento = Convert.ToDateTime(venda.DataPagamento);
+                var venda = await _context.Vendas.FirstOrDefaultAsync(m => m.Id == parcela.VendaId);
+            
+
+                var valorPagamento = Convert.ToDecimal(v.Valor.Replace(".", ","));
+                var dataPagamento = Convert.ToDateTime(v.DataPagamento);
                 var diasVencido = Convert.ToInt32(DateTime.Now.Date.Subtract(parcela.DataVencimento.Date).TotalDays);
-                var juros = Convert.ToDecimal(venda.Juros.Replace(".", ","));
+                var juros = Convert.ToDecimal(v.Juros.Replace(".", ","));
 
                 //se estiver vencido
                 CalculoPagamentoParcela(parcela, valorPagamento, diasVencido, juros);
@@ -80,8 +84,30 @@ namespace flordelizHemilly.Controllers
                     parcela.Historico = JsonConvert.SerializeObject(historico, Formatting.Indented);
                 }
 
+                #region VERIFICANDO SE TODAS PARCELAS ESTÃO PAGAS PARA BAIXAR NA COMPRA.
+                var listaParcelasVenda = await _context.Parcelas.Where(m => m.VendaId == parcela.VendaId).ToListAsync();
+                int nParcelas = listaParcelasVenda.Count();
+                int parcelasPagas = 0;
+                foreach (var item in listaParcelasVenda)
+                {
+                    if(item.Pago)
+                    {
+                        parcelasPagas++;
+                    }
+                }
+
+                if (nParcelas == parcelasPagas)
+                {
+                    venda.Status = 1;
+
+                    _context.Update(venda);
+                    await _context.SaveChangesAsync();
+                }
+                #endregion
+
                 _context.Update(parcela);
                 await _context.SaveChangesAsync();
+
 
 
                 //TODO - realizar histório de vendas parciais.
@@ -137,8 +163,7 @@ namespace flordelizHemilly.Controllers
             }
             else
             {
-                if (valorPagamento >= parcela.Valor)
-                {
+                if (valorPagamento >= Math.Round(parcela.Valor,2)){
                     parcela.Pago = true;
                 }
                 else

@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿    using System.ComponentModel.DataAnnotations;
 
 namespace flordelizHemilly.Models
 {
@@ -20,6 +20,6 @@ namespace flordelizHemilly.Models
         public string? Senha { get; set; }
 
         public string LojasAcesso { get; set; }
-        //public IEnumerable<Loja> Loja { get; set; }
+        public int LojaId{ get; set; }
     }
 }

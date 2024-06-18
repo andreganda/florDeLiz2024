@@ -8,9 +8,11 @@ using Microsoft.EntityFrameworkCore;
 using flordelizHemilly.DataBase;
 using flordelizHemilly.Models;
 using static flordelizHemilly.Models.SuportClass;
+using Microsoft.AspNetCore.Authorization;
 
 namespace flordelizHemilly.Controllers
 {
+    [Authorize]
     public class UsuariosController : Controller
     {
         private readonly FlorDeLizContext _context;
@@ -76,7 +78,7 @@ namespace flordelizHemilly.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateUpdate([Bind("Id,Nome,Telefone,Email,Login,Senha,LojasAcesso")] Usuario usuario)
+        public async Task<IActionResult> CreateUpdate(Usuario usuario)
         {
             ViewData["ListaSelectLojas"] = await ListaSelectLojas();
 
@@ -86,14 +88,14 @@ namespace flordelizHemilly.Controllers
                 var existingUser = _context.Usuarios.FirstOrDefault(u => u.Email == usuario.Email);
                 if (existingUser != null && existingUser.Id != usuario.Id)
                 {
-                    //retirando entidade do contexto
-                    _context.Entry(existingUser).State = EntityState.Detached;
+
 
                     ModelState.AddModelError("", "Esse email ja existe.");
                     return View("Create", usuario);
                 }
 
-
+                //retirando entidade do contexto
+                _context.Entry(existingUser).State = EntityState.Detached;
 
                 if (usuario.Id == 0)
                 {
@@ -141,7 +143,7 @@ namespace flordelizHemilly.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Nome,Telefone,Email,Login,Senha,LojasAcesso")] Usuario usuario)
+        public async Task<IActionResult> Edit(int id, Usuario usuario)
         {
             if (id != usuario.Id)
             {

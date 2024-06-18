@@ -1,8 +1,10 @@
 using flordelizHemilly.DataBase;
 using flordelizHemilly.Service;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
+using System.Security.Principal;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,10 +22,12 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 builder.Services.AddControllersWithViews();
 
 
+
 // Adicionar o serviço do DbContext com MySQL
 builder.Services.AddDbContext<FlorDeLizContext>(options =>
     options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"),
     new MySqlServerVersion(new Version(8, 0, 25))));
+
 
 
 // Registrando o serviço. 

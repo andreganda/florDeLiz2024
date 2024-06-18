@@ -11,9 +11,14 @@ using flordelizHemilly.Service;
 using MySqlConnector;
 using System.Data.SqlClient;
 using static flordelizHemilly.Models.SuportClass;
+using Microsoft.AspNetCore.Authorization;
+using Newtonsoft.Json;
+using static flordelizHemilly.Controllers.ParcelasController;
+using System.Text;
 
 namespace flordelizHemilly.Controllers
 {
+    [Authorize]
     public class VendasController : Controller
     {
         private readonly FlorDeLizContext _context;
@@ -42,14 +47,14 @@ namespace flordelizHemilly.Controllers
         }
 
         private IEnumerable<SelectListItem> ListaClientesSelectItem()
-        {
+        { int lojaId = Convert.ToInt16(User.FindFirst("LojaId")?.Value);
             var listaManual = new List<SelectListItem>
             {
                 new SelectListItem { Text = "SELECIONE UM CLIENTE ", Value = "" }
             };
 
             // Criando a lista selecionável a partir dos clientes
-            var listaSelecionavelClientes = new SelectList(_context.Clientes.Where(a => a.Status == 1), "ClienteID", "Nome");
+            var listaSelecionavelClientes = new SelectList(_context.Clientes.Where(a => a.Status == 1 && a.LojaId == lojaId), "ClienteID", "Nome");
 
             // Concatenando a lista manual com a lista selecionável dos clientes
             var listaCompleta = listaManual.Concat(listaSelecionavelClientes);
@@ -57,6 +62,26 @@ namespace flordelizHemilly.Controllers
             return listaCompleta;
         }
 
+        [HttpGet]
+        public async Task<string> DetalharItensCompra(int idVenda)
+        {
+            var itensCompra = await _context.ItemVendas.Where(a=> a.VendaId == idVenda).ToListAsync();
+
+            var sb = new StringBuilder();
+
+            foreach (var item in itensCompra)
+            {
+                sb.Append($"<tr>" +
+                    $"<td>{item.NomeDoProduto}</td>" +
+                    $"<td>{item.Quantidade}</td>" +
+                    $"<td>{Math.Round(item.PrecoUnitario,2)}</td>" +
+                    $"<td>{Math.Round(item.Total,2)}</td>" +
+                    $"</tr>");
+            }
+
+            return sb.ToString();
+
+        }
 
         [HttpPost]
         public async Task<Mensagem> SalvarVendaAsync(VendaViewModel venda)
@@ -64,6 +89,8 @@ namespace flordelizHemilly.Controllers
             var m = new Mensagem();
             try
             {
+                int lojaId = Convert.ToInt16(User.FindFirst("LojaId")?.Value);
+
                 decimal entrada = decimal.Parse(venda.Entrada.Replace("R$", "").Trim());
                 decimal total = Convert.ToDecimal(venda.Total.Replace("R$", "").Trim());
 
@@ -73,6 +100,7 @@ namespace flordelizHemilly.Controllers
                 novaVenda.DataDaVenda = Convert.ToDateTime(venda.DataDaVenda);
                 novaVenda.ClienteId = venda.ClienteId;
                 novaVenda.TipoPagamento = venda.TipoFormaPagamento;
+                novaVenda.LojaId = lojaId;
 
                 //venda a vista;
                 if (venda.TipoFormaPagamento == 2)
@@ -210,8 +238,12 @@ namespace flordelizHemilly.Controllers
 
             if (idCliente != null)
             {
-                query += $"and ClienteId = {idCliente}";
+                query += $"and ClienteId = {idCliente} ";
             }
+
+            int lojaId = Convert.ToInt16(User.FindFirst("LojaId")?.Value);
+
+            query += $" and LojaId = {lojaId}";
 
             var sqlQuery = $"SELECT * FROM Vendas where {query}";
 

@@ -8,7 +8,7 @@ namespace flordelizHemilly.Models
         [Key]
         public int ClienteID { get; set; }
 
-        [Required (ErrorMessage = "Nome é obrigatório")]
+        [Required(ErrorMessage = "Nome é obrigatório")]
         public string? Nome { get; set; }
 
 		public string? Endereco { get; set; }
@@ -41,6 +41,6 @@ namespace flordelizHemilly.Models
         public int Status { get; set; }
 
         public int LojaId { get; set; }
-        public Loja? Loja { get; set; }
+        public string ?Observacoes { get; set; }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using flordelizHemilly.DataBase;
+using flordelizHemilly.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
@@ -26,13 +27,17 @@ namespace flordelizHemilly.Controllers
         {
 
             var userBd = await _context.Usuarios.FirstOrDefaultAsync(a=> a.Email == login.Email && a.Senha == login.Senha);
+			var loja = await _context.Lojas.FirstAsync(a => a.Id == userBd.LojaId);
 
-            if (userBd!=null)
+			if (userBd!=null)
             {
                 var claims = new List<Claim>
                 {
                     new Claim(ClaimTypes.Email, login.Email),
-                    new Claim(ClaimTypes.Authentication, "1")
+                    new Claim(ClaimTypes.Name, userBd.Nome),
+                    new Claim("UserId", userBd.Id.ToString()),
+                    new Claim("LojaId", userBd.LojaId.ToString()),
+                    new Claim("NomeLoja", loja.NomeFantasia)
                 };
 
                 var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);

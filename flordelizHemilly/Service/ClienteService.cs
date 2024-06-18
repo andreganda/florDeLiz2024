@@ -8,7 +8,7 @@ namespace flordelizHemilly.Service
     {
         Task<Cliente> Create(Cliente cliente);
         Task<Cliente?> Update(Cliente cliente);
-        Task<Cliente> VerificarEmailExistenteAsync(string email);
+        Task<Cliente> VerificarEmailExistenteAsync(string email, int idLoja);
         Task<Cliente?> Detail(int id);
         Task<bool> DeleteForever(int id);
         Task<bool> DeleteOff(int id);
@@ -121,9 +121,9 @@ namespace flordelizHemilly.Service
 
 
         }
-        public async Task<Cliente> VerificarEmailExistenteAsync(string email)
+        public async Task<Cliente> VerificarEmailExistenteAsync(string email, int idLoja)
         {
-            return await _context.Clientes.FirstOrDefaultAsync(c => c.Email == email);
+            return await _context.Clientes.FirstOrDefaultAsync(c => c.Email == email && c.LojaId == idLoja);
         }
     }
 }

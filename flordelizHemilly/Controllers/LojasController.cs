@@ -7,9 +7,11 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using flordelizHemilly.DataBase;
 using flordelizHemilly.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace flordelizHemilly.Controllers
 {
+    [Authorize]
     public class LojasController : Controller
     {
         private readonly FlorDeLizContext _context;

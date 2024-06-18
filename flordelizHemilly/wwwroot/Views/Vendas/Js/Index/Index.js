@@ -10,7 +10,6 @@
 
 });
 
-
 function SetDataHoje() {
 
     var today = new Date();
@@ -46,4 +45,28 @@ function getUrlVars()
         vars[hash[0]] = hash[1];
     }
     return vars;
-}
+};
+
+function AbrirModalDetalharItens(idVenda) {
+    $("#modal_detalhes_compra").modal('show');
+
+    let param = {};
+    param.idVenda = idVenda;
+
+    $.ajax({
+        type: "GET",
+        url: "/Vendas/DetalharItensCompra",
+        // dataType: "json",
+        // async: false,
+        data: param,
+        // contentType: "application/json; charset=utf-8",
+        success: function (msg) {
+
+            $("#tbodyDetalhesPagamento").html(msg);
+
+        },
+        error: function (response) {
+            alert(response);
+        }
+    });
+};

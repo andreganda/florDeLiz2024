@@ -8,9 +8,11 @@ using Microsoft.EntityFrameworkCore;
 using flordelizHemilly.DataBase;
 using flordelizHemilly.Models;
 using flordelizHemilly.Service;
+using Microsoft.AspNetCore.Authorization;
 
 namespace flordelizHemilly.Controllers
 {
+    [Authorize]
     public class ClienteController : Controller
     {
         private readonly FlorDeLizContext _context;
@@ -22,9 +24,73 @@ namespace flordelizHemilly.Controllers
             _clienteService = clienteService;
         }
 
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateUpdate(Cliente cliente)
+        {
+            int lojaId = Convert.ToInt16(User.FindFirst("LojaId")?.Value);
+
+            if (ModelState.IsValid)
+            {
+                if (cliente.ClienteID == 0)
+                {
+                    if (cliente.Email != string.Empty && cliente.Email != null)
+                    {
+                        // Verificar se o e-mail já está em uso
+                        var emailExistente = await _clienteService.VerificarEmailExistenteAsync(cliente.Email, lojaId);
+                        if (emailExistente != null)
+                        {
+                            TempData["MessageError"] = $"O e-mail {cliente.Email} já está em uso.";
+                            return RedirectToAction(nameof(Index));
+                        }
+                    }
+                    cliente.Status = 1; //cliente ativo
+                    cliente.LojaId = lojaId;
+                    var c = await _clienteService.Create(cliente);
+                    TempData["MessageSuccess"] = $"Cliente {cliente.Nome} cadastrado com sucesso!";
+                    return RedirectToAction(nameof(Index));
+                }
+                else
+                {
+                    var clienteBd = new Cliente();
+                    if (cliente.Email != string.Empty && cliente.Email != null)
+                    {
+                        // Verificar se o e-mail já está em uso
+                        clienteBd = await _clienteService.VerificarEmailExistenteAsync(cliente.Email, lojaId);
+                        if (clienteBd != null && clienteBd.ClienteID != cliente.ClienteID)
+                        {
+                            TempData["MessageError"] = $"O e-mail {cliente.Email} já está em uso.";
+
+                            return RedirectToAction(nameof(Index));
+                        }
+                    }
+
+                    if (clienteBd != null)
+                    {
+                        _context.Entry(clienteBd).State = EntityState.Detached;
+                    }
+
+                    cliente.LojaId= lojaId;
+                    await _clienteService.Update(cliente);
+                    TempData["MessageSuccess"] = $"Cliente {cliente.Nome} foi alterado com sucesso!";
+                    _context.Clientes.Update(cliente);
+
+                }
+                _context.SaveChanges();
+
+                ViewData["MsgModal"] = "Usuario alterado com sucesso";
+                ViewData["MostrarModal"] = true;
+                return RedirectToAction("Index", "Cliente");
+            }
+
+            return View("Index");
+        }
+
         public async Task<IActionResult> Index()
         {
-            var lista = await _context.Clientes.Where(c => c.Status == 1).ToListAsync();
+            int lojaId = Convert.ToInt16(User.FindFirst("LojaId")?.Value);
+            var lista = await _context.Clientes.Where(c => c.Status == 1 && c.LojaId == lojaId).ToListAsync();
             return View(lista);
         }
 
@@ -42,26 +108,27 @@ namespace flordelizHemilly.Controllers
                 return NotFound();
             }
 
-            return View(cliente);
+            return View("Create",cliente);
         }
 
         public IActionResult Create()
         {
-            return View();
+            return View(new Cliente());
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([FromForm] Cliente cliente)
         {
-            cliente.LojaId = 1;
+            int lojaId = Convert.ToInt16(User.FindFirst("LojaId")?.Value);
+            cliente.LojaId = lojaId;
             if (ModelState.IsValid)
             {
 
                 if (cliente.Email!=string.Empty && cliente.Email !=null)
                 {
                     // Verificar se o e-mail já está em uso
-                    var emailExistente = await _clienteService.VerificarEmailExistenteAsync(cliente.Email);
+                    var emailExistente = await _clienteService.VerificarEmailExistenteAsync(cliente.Email, lojaId);
                     if (emailExistente != null)
                     {
                         TempData["MessageError"] = $"O e-mail {cliente.Email} já está em uso.";
@@ -83,13 +150,16 @@ namespace flordelizHemilly.Controllers
             {
                 return NotFound();
             }
-            return View(cliente);
+            return View(nameof(Create),cliente);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [FromForm] Cliente cliente)
         {
+            int lojaId = Convert.ToInt16(User.FindFirst("LojaId")?.Value);
+            cliente.LojaId = lojaId;
+
             if (id != cliente.ClienteID)
             {
                 return NotFound();
@@ -103,15 +173,20 @@ namespace flordelizHemilly.Controllers
                     if (cliente.Email != string.Empty && cliente.Email != null)
                     {
                         // Verificar se o e-mail já está em uso
-                        clienteBd = await _clienteService.VerificarEmailExistenteAsync(cliente.Email);
+                        clienteBd = await _clienteService.VerificarEmailExistenteAsync(cliente.Email, lojaId);
                         if (clienteBd != null && clienteBd.ClienteID != id)
                         {
                             TempData["MessageError"] = $"O e-mail {cliente.Email} já está em uso.";
+                           
                             return RedirectToAction(nameof(Index));
-                        } 
+                        }  
                     }
 
-                    _context.Entry(clienteBd).State = EntityState.Detached;
+                    if (clienteBd != null)
+                    {
+                        _context.Entry(clienteBd).State = EntityState.Detached;
+                    }
+                    
 
                     await _clienteService.Update(cliente);
                     TempData["MessageSuccess"] = $"Cliente {cliente.Nome} foi alterado com sucesso!";

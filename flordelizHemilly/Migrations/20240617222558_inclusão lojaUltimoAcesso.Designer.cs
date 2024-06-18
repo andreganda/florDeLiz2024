@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using flordelizHemilly.DataBase;
 
@@ -10,9 +11,11 @@ using flordelizHemilly.DataBase;
 namespace flordelizHemilly.Migrations
 {
     [DbContext(typeof(FlorDeLizContext))]
-    partial class FlorDeLizContextModelSnapshot : ModelSnapshot
+    [Migration("20240617222558_inclusão lojaUltimoAcesso")]
+    partial class inclusãolojaUltimoAcesso
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -63,10 +66,6 @@ namespace flordelizHemilly.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<string>("Observacoes")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
                     b.Property<string>("Profissao")
                         .HasColumnType("longtext");
 
@@ -84,6 +83,8 @@ namespace flordelizHemilly.Migrations
                         .HasColumnType("longtext");
 
                     b.HasKey("ClienteID");
+
+                    b.HasIndex("LojaId");
 
                     b.ToTable("Clientes");
                 });
@@ -182,7 +183,7 @@ namespace flordelizHemilly.Migrations
                     b.Property<string>("Login")
                         .HasColumnType("longtext");
 
-                    b.Property<int>("LojaId")
+                    b.Property<int>("LojaIdUltimoAcesso")
                         .HasColumnType("int");
 
                     b.Property<string>("LojasAcesso")
@@ -240,6 +241,17 @@ namespace flordelizHemilly.Migrations
                     b.HasIndex("ClienteId");
 
                     b.ToTable("Vendas");
+                });
+
+            modelBuilder.Entity("flordelizHemilly.Models.Cliente", b =>
+                {
+                    b.HasOne("flordelizHemilly.Models.Loja", "Loja")
+                        .WithMany()
+                        .HasForeignKey("LojaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Loja");
                 });
 
             modelBuilder.Entity("flordelizHemilly.Models.ItemVenda", b =>
