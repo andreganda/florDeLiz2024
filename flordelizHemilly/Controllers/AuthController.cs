@@ -27,10 +27,11 @@ namespace flordelizHemilly.Controllers
         {
 
             var userBd = await _context.Usuarios.FirstOrDefaultAsync(a=> a.Email == login.Email && a.Senha == login.Senha);
-			var loja = await _context.Lojas.FirstAsync(a => a.Id == userBd.LojaId);
+			
 
 			if (userBd!=null)
             {
+                var loja = await _context.Lojas.FirstAsync(a => a.Id == userBd.LojaId);
                 var claims = new List<Claim>
                 {
                     new Claim(ClaimTypes.Email, login.Email),

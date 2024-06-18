@@ -94,8 +94,11 @@ namespace flordelizHemilly.Controllers
                     return View("Create", usuario);
                 }
 
-                //retirando entidade do contexto
-                _context.Entry(existingUser).State = EntityState.Detached;
+                if (existingUser!=null)
+                {
+                    //retirando entidade do contexto
+                    _context.Entry(existingUser).State = EntityState.Detached; 
+                }
 
                 if (usuario.Id == 0)
                 {
