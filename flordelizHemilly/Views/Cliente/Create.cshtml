@@ -4,6 +4,7 @@
     ViewData["Title"] = "Delete";
 }
 
+
 <div class="card card-custom gutter-b">
     <div class="card-header">
         <div class="card-title">
@@ -20,15 +21,7 @@
             <div class="row">
                 <div class="col-md-12">
                     <div class="form-group row">
-
-                        @*     <div class="col-lg-6">
-                        <label asp-for="LojaId" class="control-label"></label>
-                        <input asp-for="LojaId" class="form-control" />
-                        <span asp-validation-for="LojaId" class="text-danger"></span>
-                        </div> *@
-
                         <input type="hidden" value="0" asp-for="LojaId" />
-
 
                         <div class="col-lg-4">
                             <label asp-for="Nome" class="control-label"></label>
@@ -37,8 +30,28 @@
                         </div>
 
                         <div class="col-lg-4">
+                            <label asp-for="NomeMae" class="control-label"></label>
+                            <input asp-for="NomeMae" class="form-control" />
+                            <span asp-validation-for="NomeMae" class="text-danger"></span>
+                        </div>
+
+                        <div class="col-lg-4">
+                            <label asp-for="NomePai" class="control-label"></label>
+                            <input asp-for="NomePai" class="form-control" />
+                            <span asp-validation-for="NomePai" class="text-danger"></span>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group row">
+                        <div class="col-lg-4">
                             <label asp-for="Cpf" class="control-label"></label>
-                            <input asp-for="Cpf" class="form-control" />
+                            <input asp-for="Cpf" class="form-control" onkeypress="mascara(this, mcpf);" maxlength="14" />
                             <span asp-validation-for="Cpf" class="text-danger"></span>
                         </div>
 
@@ -47,11 +60,9 @@
                             <input asp-for="Rg" class="form-control" />
                             <span asp-validation-for="Rg" class="text-danger"></span>
                         </div>
-
-
-                    </div>
-                </div>
-            </div>
+                        </div>
+                        </div>
+                        </div>
 
 
             <div class="row">
@@ -129,8 +140,8 @@
 
                         <div class="col-lg-4">
                             <label asp-for="RendaMensal" class="control-label"></label>
-                            <input asp-for="RendaMensal" class="form-control" />
-                            <span asp-validation-for="RendaMensal" class="text-danger"></span>
+                            <input asp-for="RendaMensal" onkeypress="mascara(this, mdinheiro);" class="form-control" />
+                            @* <span asp-validation-for="RendaMensal" class="text-danger"></span> *@
                         </div>
 
                         <div class="col-lg-4">
@@ -149,7 +160,7 @@
                     <div class="form-group row">
                         <div class="col-lg-4">
                             <label asp-for="Telefone" class="control-label"></label>
-                            <input asp-for="Telefone" class="form-control" />
+                            <input asp-for="Telefone" class="form-control"  onkeypress="mascara(this, mtel);" />
                             <span asp-validation-for="Telefone" class="text-danger"></span>
                         </div>
                         <div class="col-lg-8">
@@ -176,10 +187,13 @@
     </div>
 </div>
 
-<script src="/Views/Cliente/Js/Create.js"></script>
+
 
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
+                <script src="/Content/arquivos_download/js/mascaras.js"></script>
+                <script src="/Views/Cliente/Js/Create.js"></script>
+
     }
 }

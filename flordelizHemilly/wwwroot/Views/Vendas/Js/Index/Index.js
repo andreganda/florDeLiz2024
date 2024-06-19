@@ -1,4 +1,4 @@
-﻿jQuery(document).ready(function () {
+jQuery(document).ready(function () {
 
     var idCliente = getUrlVars()["idCliente"];
     $("#idCliente").select2();
@@ -62,7 +62,7 @@ function AbrirModalDetalharItens(idVenda) {
         // contentType: "application/json; charset=utf-8",
         success: function (msg) {
 
-            $("#tbodyDetalhesPagamento").html(msg);
+            $("#tbodyDetalhesItens").html(msg);
 
         },
         error: function (response) {

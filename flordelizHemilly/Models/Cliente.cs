@@ -21,7 +21,7 @@ namespace flordelizHemilly.Models
 		public string? CasaPropriaAluguel { get; set; }
 		public string? Profissao { get; set; }
 		public string? LocalTrabalho { get; set; }
-		public decimal? RendaMensal{ get; set; }
+		public string? RendaMensal{ get; set; }
 
 
 		[EmailAddress(ErrorMessage = "Esse não é um email válido")]
@@ -42,5 +42,9 @@ namespace flordelizHemilly.Models
 
         public int LojaId { get; set; }
         public string ?Observacoes { get; set; }
+        public string ?NomePai { get; set; }
+        public string ?NomeMae { get; set; }
+
+
     }
 }

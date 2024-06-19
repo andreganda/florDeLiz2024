@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using flordelizHemilly.DataBase;
 
@@ -10,9 +11,11 @@ using flordelizHemilly.DataBase;
 namespace flordelizHemilly.Migrations
 {
     [DbContext(typeof(FlorDeLizContext))]
-    partial class FlorDeLizContextModelSnapshot : ModelSnapshot
+    [Migration("20240619135741_mudança renda mensal")]
+    partial class mudançarendamensal
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -61,12 +64,6 @@ namespace flordelizHemilly.Migrations
 
                     b.Property<string>("Nome")
                         .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("NomeMae")
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("NomePai")
                         .HasColumnType("longtext");
 
                     b.Property<string>("Observacoes")
