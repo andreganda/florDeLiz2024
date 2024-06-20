@@ -2,6 +2,11 @@
 
     let dataDaVenda = $("#DataCompra").val();
     let clienteId = $("#ClienteId").val();
+
+    if(clienteId == ""){
+        clienteId = 0;
+    }
+
     let numeroParcelas = $("#NumeroParcelas").val();
     let total = totalCompra2.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
     let entrada = $("#ValorEntrada").val();

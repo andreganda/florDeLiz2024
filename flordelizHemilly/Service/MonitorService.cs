@@ -12,7 +12,7 @@ namespace flordelizHemilly.Service
         public static void BackUpBd(string connectionString, string backupFilePath)
         {
             var dt = DateTime.Now;
-            string nameFile = $"FLORDELIZ_{dt.Day}{dt.Month}{dt.Year}_{dt.Millisecond}.sql";
+            string nameFile = $"FLORDELIZ_{dt.Day}{dt.Month}{dt.Year}_{dt.Millisecond}--{dt.Hour}_{dt.Minute}_{dt.Second}.sql";
             var uploadsPath = Path.Combine(backupFilePath, "wwwroot", "BackBd", nameFile);
 
             if (!Directory.Exists(uploadsPath))

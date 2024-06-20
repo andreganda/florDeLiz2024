@@ -6,12 +6,12 @@ namespace flordelizHemilly.Models
     {
         public int Id { get; set; }
         public DateTime DataDaVenda { get; set; }
-        public int ClienteId { get; set; }
+        public int? ClienteId { get; set; }
         public int NumeroParcelas { get; set; }
         public Cliente Cliente { get; set; }
         public decimal Total { get; set; }
-        
         public int? LojaId { get; set; }
+        public string? Observacao { get; set; }
 
         /// <summary>
         /// Caso o cliente dê algum valor de entrada na compra para abater na criaçao 
