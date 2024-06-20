@@ -8,6 +8,8 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
 using flordelizHemilly.DataBase;
 using Microsoft.EntityFrameworkCore;
+using System.Net;
+using System.Net.Mail;
 
 namespace flordelizHemilly.Controllers
 {
@@ -23,6 +25,44 @@ namespace flordelizHemilly.Controllers
             _context = context;
         }
 
+        private void SendEmail()
+        {
+            // Configurações do SMTP da KingHost
+            string smtpAddress = "smtp.kinghost.net";
+            int portNumber = 587; // ou 465 para SSL
+            bool enableSSL = true;
+
+            string emailFrom = "admflordeliz@flordelizlinhares.kinghost.net";
+            string password = "hemillyGandaadm*";
+            string emailTo = "andrefelipeg@hotmail.com";
+            string subject = "bkp flor de liz";
+            string body = "Conteúdo do e-mail.";
+
+            using (MailMessage mail = new MailMessage())
+            {
+                mail.From = new MailAddress(emailFrom);
+                mail.To.Add(emailTo);
+                mail.Subject = subject;
+                mail.Body = body;
+                mail.IsBodyHtml = true;
+
+                using (SmtpClient smtp = new SmtpClient(smtpAddress, portNumber))
+                {
+                    smtp.Credentials = new NetworkCredential(emailFrom, password);
+                    smtp.EnableSsl = enableSSL;
+                    try
+                    {
+                        smtp.Send(mail);
+                        Console.WriteLine("E-mail enviado com sucesso!");
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Erro ao enviar e-mail: {ex.Message}");
+                    }
+                }
+            }
+        }
+
         public async Task<IActionResult> IndexAsync()
         {
             int lojaId = Convert.ToInt16(User.FindFirst("LojaId")?.Value);
@@ -32,6 +72,8 @@ namespace flordelizHemilly.Controllers
 
             ViewData["nomeLoja"] = loja.NomeFantasia ;
             ViewData["nomeUsuario"] = nomeUsuario;
+
+            //SendEmail();
 
             return View();
         }   
