@@ -1,4 +1,5 @@
 ﻿using flordelizHemilly.Configuration;
+using flordelizHemilly.DataBase;
 using Hangfire;
 using Hangfire.Console;
 using Hangfire.Server;
@@ -8,12 +9,13 @@ namespace flordelizHemilly.Service
 {
     public class MonitorService
     {
-
         public static void BackUpBd(string connectionString, string backupFilePath)
         {
             var dt = DateTime.Now;
-            string nameFile = $"FLORDELIZ_{dt.Day}{dt.Month}{dt.Year}_{dt.Millisecond}--{dt.Hour}_{dt.Minute}_{dt.Second}.sql";
-            var uploadsPath = Path.Combine(backupFilePath, "wwwroot", "BackBd", nameFile);
+            string nameFile = $"FLORDELIZ_{dt.Day}{dt.Month}{dt.Year}___hora___{dt.Hour}_{dt.Minute}_{dt.Second}.sql";
+            var uploadsPath = Path.Combine(PathHelper.WebRootPath, "BackBd", nameFile);
+
+            //var uploadsPath = Path.Combine(backupFilePath, "BackBd", nameFile);
 
             if (!Directory.Exists(uploadsPath))
             {
@@ -29,9 +31,11 @@ namespace flordelizHemilly.Service
                                 conn.Open();
 
                                 // Executar o backup usando o utilitário mysqldump
-                                mb.ExportToFile(uploadsPath);
+                               mb.ExportToFile(uploadsPath);
 
                                 conn.Close();
+
+                                Console.WriteLine("Finalizadou BKP");
                             }
                         }
                     }

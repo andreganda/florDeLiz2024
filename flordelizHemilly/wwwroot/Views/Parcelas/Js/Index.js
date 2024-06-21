@@ -9,6 +9,7 @@ function AbrirModalParcela(numeroParcela, diasVencido, valorParcela, idParcela) 
 
     var valorCorrigido = CalcularValorCorrigido(diasVencido, valorParcela);
     $("#ValorParcela").val(valorParcela);
+    $("#ValorPagamento").val(valorParcela);
     $("#DiasDeAtraso").val(diasVencido);
     $("#IdParcela").val(idParcela);
     $("#modal_parcela").modal('show');
@@ -89,6 +90,7 @@ function Receber() {
     let valorPagamento = $("#ValorPagamento").val();
     let dataPagamento = $("#DataPagamento").val();
     let idParcela = $("#IdParcela").val();
+    let observacao = $("#Observacao").val();
 
     let juros = $("#ValorJuros").val().replace(".", "");
     juros = juros.replace(",", ".");
@@ -99,7 +101,8 @@ function Receber() {
         Valor: valorPagamento,
         IdParcela: idParcela,
         DataPagamento: dataPagamento,
-        Juros: juros
+        Juros: juros,
+        Observacao: observacao
     };
 
     $.ajax({
@@ -158,4 +161,13 @@ function AbrirModalDetalhesParcela(idParcela) {
             alert(response);
         }
     });
+};
+
+function ReceberValorParcela(elemento){
+    if(elemento.value == 0){
+        $("#ValorPagamento").removeAttr("disabled");
+    }else{
+        $("#ValorPagamento").val($("#ValorParcela").val());
+        $("#ValorPagamento").attr("disabled","disabled");
+    }
 };

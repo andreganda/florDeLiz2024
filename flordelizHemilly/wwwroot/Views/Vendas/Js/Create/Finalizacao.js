@@ -1,5 +1,9 @@
 ﻿function FinalizarCompra() {
-    $("#modal_finalizacao").modal('show');
+
+    if(ValidacaoVenda()){
+        $("#modal_finalizacao").modal('show');
+    }
+    
 };
 
 function FormaPagamento() {

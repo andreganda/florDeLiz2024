@@ -135,7 +135,6 @@
                         </div>
 
                         <div class="form-group row">
-
                             <div class="col-lg-4">
                                 <label class="control-label"> Data pagamento: </label>
                                 <input type="date" value="1" class="form-control" id="DataPagamento" >
@@ -143,10 +142,30 @@
 
                             <div class="col-lg-4">
                                 <label class="control-label"> Valor pagamento cliente: </label>
-                                <input type="text" value="0,00" class="form-control" id="ValorPagamento" onkeyup="FormatarMoeda(this);">
+                                <input type="text" value="0,00" class="form-control" id="ValorPagamento" disabled="disabled" onkeyup="FormatarMoeda(this);">
                             </div>
-
+                            <div class="col-lg-4">
+                                <div class="form-group">
+                                    <label>Receber valor parcela?</label>
+                                    <div class="radio-inline">
+                                        <label class="radio radio-lg">
+                                            <input type="radio" checked="checked" name="ReceberValorParcela" value="1" onchange="ReceberValorParcela(this);">
+                                            <span></span>Sim
+                                        </label>
+                                        <label class="radio radio-lg">
+                                            <input type="radio" name="ReceberValorParcela" value="0" onchange="ReceberValorParcela(this);">
+                                            <span></span>Não
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
+
+                        <div class="form-group row">
+                            <label class="control-label">Observação</label>
+                            <textarea id="Observacao" class="form-control" rows="3"></textarea>
+                        </div>
+
 
                         <div class="row">
                             <div class="col-md-12">
@@ -196,6 +215,7 @@
                             <th> Data Pagamento</th>
                             <th> Valor </th>
                             <th> Taxa juros </th>
+                            <th> Observacao </th>
                         </tr>
                     </thead>
                     <tbody id="tbodyDetalhesPagamento">

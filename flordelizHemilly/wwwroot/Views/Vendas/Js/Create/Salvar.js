@@ -11,6 +11,7 @@
     let total = totalCompra2.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
     let entrada = $("#ValorEntrada").val();
     let tipoPagamento = $("#TipoFormaPagamento").val();
+    let observacao = $("#Observacao").val();
 
     // Obtém os dados do formulário
     var formData = {
@@ -20,7 +21,8 @@
         Total: total,
         Entrada: entrada,
         TipoFormaPagamento: tipoPagamento,
-        ItensVenda: GetListaProdutos()
+        ItensVenda: GetListaProdutos(),
+        Observacao: observacao
     };
     
     $.ajax({

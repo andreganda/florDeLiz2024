@@ -47,42 +47,74 @@ namespace flordelizHemilly.Controllers
         public async Task<Mensagem> EfetuarPagamento(PagamentoParcelaViewModel v)
         {
             var m = new Mensagem();
-
+            string obsPagamento = "";
             try
             {
                 var parcela = await _context.Parcelas.FirstOrDefaultAsync(m => m.Id == v.IdParcela);
                 var historico = JsonConvert.DeserializeObject<List<ParcelaHistorico>>(parcela.Historico);
-
                 var venda = await _context.Vendas.FirstOrDefaultAsync(m => m.Id == parcela.VendaId);
-            
-
+                v.Valor = v.Valor.Replace(".", "");
                 var valorPagamento = Convert.ToDecimal(v.Valor.Replace(".", ","));
+
                 var dataPagamento = Convert.ToDateTime(v.DataPagamento);
                 var diasVencido = Convert.ToInt32(DateTime.Now.Date.Subtract(parcela.DataVencimento.Date).TotalDays);
+
                 var juros = Convert.ToDecimal(v.Juros.Replace(".", ","));
 
                 //se estiver vencido
                 CalculoPagamentoParcela(parcela, valorPagamento, diasVencido, juros);
-
                 parcela.DataPagamento = DateTime.Now;
+                parcela.Historico = HistoricoParcela(parcela, valorPagamento, dataPagamento, juros, v.Observacao);
 
+                _context.Update(parcela);
+                await _context.SaveChangesAsync();
 
-                if (historico == null)
+                #region DEBITO AUTOMATICO SE VALOR MAIOR QUE A PRESTAÇÃO
+                decimal valorParcela = parcela.Valor;
+                if (diasVencido > 0)
                 {
-                    List<ParcelaHistorico> listH = new List<ParcelaHistorico>
+                    valorParcela = ((parcela.Valor * (juros / 100)) * diasVencido) + parcela.Valor;
+                }
+
+                if ((valorParcela - valorPagamento) < 0)
+                {
+                    var valorRestouDaMensalidade = (valorPagamento - valorParcela);
+                    var listParcelasParaDebitoAutomatico = await _context.Parcelas.Where(m => m.VendaId == parcela.VendaId).ToListAsync();
+
+                    foreach (var parcelaExtra in listParcelasParaDebitoAutomatico)
                     {
-                        new ParcelaHistorico { Valor = valorPagamento.ToString(),
-                            DataPagamento = dataPagamento.ToShortDateString(),
-                            Juros = juros.ToString()
+                        if (!parcelaExtra.Pago && parcelaExtra.Id != v.IdParcela)
+                        {
+                            //quer dizer que o valor restante abateu por completo outra mensalidade.
+                            if ((parcelaExtra.Valor - valorRestouDaMensalidade) <= 0)
+                            {
+                                parcelaExtra.Historico = HistoricoParcela(parcelaExtra, Math.Round(parcelaExtra.Valor, 2), dataPagamento, juros, "REALIZADO AUTOMATICAMENTE COM RESTANTE DO PAGAMENTO DA PRESTAÇÃO");
+                                valorRestouDaMensalidade = valorRestouDaMensalidade - parcelaExtra.Valor;
+                                parcelaExtra.Valor = 0;
+                                parcelaExtra.Pago = true;
+                                _context.Update(parcelaExtra);
+                            }
+                            else
+                            {
+                                parcelaExtra.Historico = HistoricoParcela(parcelaExtra, Math.Round(valorRestouDaMensalidade, 2), dataPagamento, juros, "REALIZADO AUTOMATICAMENTE COM RESTANTE DO PAGAMENTO DA PRESTAÇÃO");
+                                parcelaExtra.Valor = parcelaExtra.Valor - valorRestouDaMensalidade;
+                                valorRestouDaMensalidade = valorRestouDaMensalidade - parcelaExtra.Valor;
+                                _context.Update(parcelaExtra);
+                            }
+
+                            if (valorRestouDaMensalidade <= 0)
+                                break;
                         }
-                    };
-                    parcela.Historico = JsonConvert.SerializeObject(listH, Formatting.Indented);
-                }
-                else
-                {
-                    historico.Add(new ParcelaHistorico { Valor = valorPagamento.ToString(), DataPagamento = dataPagamento.ToShortDateString(), Juros = juros.ToString() });
-                    parcela.Historico = JsonConvert.SerializeObject(historico, Formatting.Indented);
-                }
+                    }
+
+                    if (valorRestouDaMensalidade > 0)
+                    {
+                        obsPagamento = $" -------  ATENÇÃO Foi debitado todas as possiveis prestações com o dinheiro recebido, porem ainda sobrou {Math.Round(valorRestouDaMensalidade, 2).ToString()}";
+                    }
+
+                    await _context.SaveChangesAsync();
+                } 
+                #endregion
 
                 #region VERIFICANDO SE TODAS PARCELAS ESTÃO PAGAS PARA BAIXAR NA COMPRA.
                 var listaParcelasVenda = await _context.Parcelas.Where(m => m.VendaId == parcela.VendaId).ToListAsync();
@@ -90,7 +122,7 @@ namespace flordelizHemilly.Controllers
                 int parcelasPagas = 0;
                 foreach (var item in listaParcelasVenda)
                 {
-                    if(item.Pago)
+                    if (item.Pago)
                     {
                         parcelasPagas++;
                     }
@@ -105,14 +137,9 @@ namespace flordelizHemilly.Controllers
                 }
                 #endregion
 
-                _context.Update(parcela);
-                await _context.SaveChangesAsync();
 
-
-
-                //TODO - realizar histório de vendas parciais.
                 m.Status = 1;
-                m.Descricao = "Pagamento de parcela realizado com sucesso.";
+                m.Descricao = $"Pagamento de parcela realizado com sucesso. {obsPagamento}";
 
                 return m;
             }
@@ -122,6 +149,29 @@ namespace flordelizHemilly.Controllers
                 m.Status = 0;
                 m.Descricao = ex.Message.ToString();
                 return m;
+            }
+        }
+
+        public string HistoricoParcela(Parcela parcela, decimal valorPagamento, DateTime dataPagamento, decimal juros, string observacao)
+        {
+            var historico = JsonConvert.DeserializeObject<List<ParcelaHistorico>>(parcela.Historico);
+
+            if (historico == null)
+            {
+                List<ParcelaHistorico> listH = new List<ParcelaHistorico>
+                                {
+                                new ParcelaHistorico { Valor = valorPagamento.ToString(),
+                                DataPagamento = dataPagamento.ToShortDateString(),
+                                Juros = juros.ToString(),
+                                Observacao = observacao
+                                }
+                                };
+                return JsonConvert.SerializeObject(listH, Formatting.Indented);
+            }
+            else
+            {
+                historico.Add(new ParcelaHistorico { Valor = valorPagamento.ToString(), DataPagamento = dataPagamento.ToShortDateString(), Juros = juros.ToString(), Observacao = observacao });
+                return JsonConvert.SerializeObject(historico, Formatting.Indented);
             }
         }
 
@@ -136,7 +186,10 @@ namespace flordelizHemilly.Controllers
             foreach (var item in historico)
             {
                 sb.Append($"<tr>" +
-                    $"<td>{item.DataPagamento}</td> <td>{item.Valor}</td> <td>{item.Juros}</td>" +
+                    $"<td>{item.DataPagamento}</td>" +
+                    $"<td>{item.Valor}</td>" +
+                    $"<td>{item.Juros}</td>" +
+                    $"<td>{item.Observacao}</td>" +
                     $"</tr>");
             }
 
@@ -159,11 +212,11 @@ namespace flordelizHemilly.Controllers
                 {
                     parcela.Valor = valorParcela - valorPagamento;
                 }
-                //TODO - fazer o debito de outras parcelas, caso o cliente dê mais dinheiro.
             }
             else
             {
-                if (valorPagamento >= Math.Round(parcela.Valor,2)){
+                if (valorPagamento >= Math.Round(parcela.Valor, 2))
+                {
                     parcela.Pago = true;
                 }
                 else
@@ -317,6 +370,7 @@ namespace flordelizHemilly.Controllers
             public string? Valor { get; set; }
             public string? Juros { get; set; }
             public string? DataPagamento { get; set; }
+            public string? Observacao { get; set; }
         }
 
         public class ParcelaHistorico
@@ -324,6 +378,8 @@ namespace flordelizHemilly.Controllers
             public string DataPagamento { get; set; }
             public string? Valor { get; set; }
             public string? Juros { get; set; }
+            public string? Observacao { get; set; }
+
         }
     }
 }

@@ -101,6 +101,7 @@ namespace flordelizHemilly.Controllers
                 novaVenda.ClienteId = venda.ClienteId;
                 novaVenda.TipoPagamento = venda.TipoFormaPagamento;
                 novaVenda.LojaId = lojaId;
+                novaVenda.Observacao = venda.Observacao;
 
                 //venda a vista;
                 if (venda.TipoFormaPagamento == 2)
@@ -373,6 +374,7 @@ namespace flordelizHemilly.Controllers
             public int NumeroParcelas { get; set; }
             public string Total { get; set; }
             public string Entrada { get; set; }
+            public string Observacao { get; set; }
             public int TipoFormaPagamento { get; set; }
             public IEnumerable<ItemVendaDto> ItensVenda { get; set; }
         }

@@ -88,9 +88,11 @@ app.UseHangfireDashboard("/hangfire", new DashboardOptions
 });
 
 
-var contentRootPath = builder.Environment.ContentRootPath;
+var contentRootPath = builder.Environment.WebRootPath;
 //// Exemplo: obter o caminho para a pasta "uploads" dentro do wwwroot
 //var uploadsPath = Path.Combine(contentRootPath, "wwwroot","BackBd" ,"flordeliz_backup.sql");
+
+PathHelper.WebRootPath = app.Environment.WebRootPath;
 
 // Recurring job
 RecurringJob.AddOrUpdate("make_backup_bd", () => MonitorService.BackUpBd(connectionString, contentRootPath), Cron.HourInterval(5));
