@@ -4,6 +4,8 @@ using Hangfire;
 using Hangfire.Console;
 using Hangfire.Server;
 using MySql.Data.MySqlClient;
+using System.Net.Mail;
+using System.Net;
 
 namespace flordelizHemilly.Service
 {
@@ -35,6 +37,8 @@ namespace flordelizHemilly.Service
 
                                 conn.Close();
 
+                                SendEmail(uploadsPath);
+
                                 Console.WriteLine("Finalizadou BKP");
                             }
                         }
@@ -44,6 +48,51 @@ namespace flordelizHemilly.Service
                 {
 
                     throw;
+                }
+            }
+        }
+
+        private static void SendEmail(string attachmentFilePath)
+        {
+            // Configurações do SMTP da KingHost
+            string smtpAddress = "smtp.kinghost.net";
+            int portNumber = 587; // ou 465 para SSL
+            bool enableSSL = true;
+
+            string emailFrom = "admflordeliz@flordelizlinhares.kinghost.net";
+            string password = "hemillyGandaadm*";
+            string emailTo = "andrefelipeg@hotmail.com";
+            string subject = "bkp flor de liz";
+            string body = $"BACKUP REALIZADO EM : {DateTime.Now}";
+
+            using (MailMessage mail = new MailMessage())
+            {
+                mail.From = new MailAddress(emailFrom);
+                mail.To.Add(emailTo);
+                mail.Subject = subject;
+                mail.Body = body;
+                mail.IsBodyHtml = true;
+
+
+                if (File.Exists(attachmentFilePath))
+                {
+                    Attachment attachment = new Attachment(attachmentFilePath);
+                    mail.Attachments.Add(attachment);
+                }
+
+                using (SmtpClient smtp = new SmtpClient(smtpAddress, portNumber))
+                {
+                    smtp.Credentials = new NetworkCredential(emailFrom, password);
+                    smtp.EnableSsl = enableSSL;
+                    try
+                    {
+                        smtp.Send(mail);
+                        Console.WriteLine("E-mail enviado com sucesso!");
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Erro ao enviar e-mail: {ex.Message}");
+                    }
                 }
             }
         }

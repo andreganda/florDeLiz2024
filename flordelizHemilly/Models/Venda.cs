@@ -24,7 +24,7 @@ namespace flordelizHemilly.Models
         /// 1 - PARCELADO
         /// 2 - A VISTA
         /// </summary>
-        public int TipoPagamento { get; set; }
+        public TipoPagamento TipoPagamento { get; set; }
 
         /// <summary>
         /// Verifica se a venda esta paga ou não
@@ -35,4 +35,15 @@ namespace flordelizHemilly.Models
         public ICollection<ItemVenda> Itens { get; set; }
         public ICollection<Parcela> Parcelas { get; set; }
     }
+
+
+
+    public enum TipoPagamento
+    {
+        Crediario = 1,
+        AVista = 2,
+        CartaoDebito = 3,
+        CartaoCredito = 4
+    }
+
 }

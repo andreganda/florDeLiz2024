@@ -43,7 +43,7 @@ namespace flordelizHemilly.Controllers
 
             //select Item
             ViewData["ClienteId"] = ListaClientesSelectItem();
-            return View();
+            return View(new Venda());
         }
 
         private IEnumerable<SelectListItem> ListaClientesSelectItem()
@@ -99,7 +99,7 @@ namespace flordelizHemilly.Controllers
                 novaVenda.Total = total;
                 novaVenda.DataDaVenda = Convert.ToDateTime(venda.DataDaVenda);
                 novaVenda.ClienteId = venda.ClienteId;
-                novaVenda.TipoPagamento = venda.TipoFormaPagamento;
+                novaVenda.TipoPagamento = (TipoPagamento)venda.TipoFormaPagamento;
                 novaVenda.LojaId = lojaId;
                 novaVenda.Observacao = venda.Observacao;
 

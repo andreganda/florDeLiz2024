@@ -2,6 +2,7 @@
 
     if(ValidacaoVenda()){
         $("#modal_finalizacao").modal('show');
+        FormaPagamento();
     }
     
 };

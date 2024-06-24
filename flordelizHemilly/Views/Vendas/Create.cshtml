@@ -150,10 +150,11 @@
                             <div class="col-lg-6">
                                 <label>N° Parcela(s):</label>
                                 <div class="input-group">
-                                    <select id="TipoFormaPagamento" class="form-control" onchange="FormaPagamento();">
+        @*                             <select id="TipoFormaPagamento" class="form-control" onchange="FormaPagamento();">
                                         <option value="2">A VISTA</option>
                                         <option value="1">PARCELADO</option>
-                                    </select>
+                                    </select> *@
+                                    <select asp-for="TipoPagamento" onchange="FormaPagamento();" id="TipoFormaPagamento" class="form-control" asp-items="Html.GetEnumSelectList<TipoPagamento>()"></select>
                                 </div>
                                 <span class="form-text text-muted">Tipo de pagamento</span>
                             </div>

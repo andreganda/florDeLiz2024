@@ -105,6 +105,9 @@
                     <th>
                         @Html.DisplayNameFor(model => model.Cliente)
                     </th>
+                                        <th>
+                        @Html.DisplayNameFor(model => model.Observacao)
+                    </th>
                     <th>
                         @Html.DisplayNameFor(model => model.Total)
                     </th>
@@ -138,13 +141,16 @@
                             @Html.DisplayFor(modelItem => item.Cliente.Nome)
                         </td>
                         <td>
+                            @item.Observacao
+                        </td>
+                        <td>
                             @Html.DisplayFor(modelItem => item.Total)
                         </td>
                         <td>
                             @Html.DisplayFor(modelItem => item.Entrada)
                         </td>
                         <td>
-                            @if (item.TipoPagamento == 1)
+                            @if (item.TipoPagamento == TipoPagamento.Crediario)
                             {
                                 <p>Parcelado</p>
                             }
@@ -168,7 +174,7 @@
                             <a href="javascript:AbrirModalDetalharItens(@item.Id)">
                                 <span class="label label-md label-success label-inline mr-2">Itens</span>
                             </a>
-                            @if (item.TipoPagamento == 1)
+                            @if (item.TipoPagamento == TipoPagamento.Crediario)
                             {
                                 <a asp-controller="Parcelas" asp-action="Index" asp-route-id="@item.Id"> <span class="label label-md label-warning label-inline mr-2">Parcelas</span></a>
                             }
