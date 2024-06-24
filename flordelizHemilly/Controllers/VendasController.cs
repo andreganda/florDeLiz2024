@@ -104,12 +104,20 @@ namespace flordelizHemilly.Controllers
                 novaVenda.Observacao = venda.Observacao;
 
                 //venda a vista;
-                if (venda.TipoFormaPagamento == 2)
+                if (venda.TipoFormaPagamento == (int)TipoPagamento.AVista ||
+                    venda.TipoFormaPagamento == (int)TipoPagamento.CartaoDebito)
                 {
                     novaVenda.NumeroParcelas = 0;
                     novaVenda.Status = 1;
                 }
-                else
+
+                if (venda.TipoFormaPagamento == (int)TipoPagamento.CartaoCredito)
+                {
+                    novaVenda.NumeroParcelas = venda.NumeroParcelas;
+                    novaVenda.Status = 1;
+                }
+
+                if (venda.TipoFormaPagamento == (int)TipoPagamento.Crediario)
                 {
                     novaVenda.NumeroParcelas = venda.NumeroParcelas;
                     novaVenda.Status = 0;
@@ -121,8 +129,8 @@ namespace flordelizHemilly.Controllers
                 {
                     await SalvarItensVendaAsync(vendaIncluida.Id, venda.ItensVenda);
 
-                    //Criando parcelas
-                    if (venda.TipoFormaPagamento == 1)
+                    //Criando parcelas no crediario
+                    if (venda.TipoFormaPagamento == (int)TipoPagamento.Crediario)
                         await SalvarParcelasAsync(vendaIncluida);
                 }
                 m.Status = 1;

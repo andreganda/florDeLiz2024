@@ -150,6 +150,21 @@
                             @Html.DisplayFor(modelItem => item.Entrada)
                         </td>
                         <td>
+                            @{
+                                if (Enum.IsDefined(typeof(TipoPagamento), item.TipoPagamento))
+                                {
+                                    TipoPagamento tipoPg = (TipoPagamento)item.TipoPagamento;
+                                    <p>@tipoPg.ToString()</p>
+                                }
+                            }
+
+@* 
+                            @if (item.TipoPagamento == TipoPagamento.Crediario)
+                            {
+                                item.TipoPagamento
+                            }
+
+
                             @if (item.TipoPagamento == TipoPagamento.Crediario)
                             {
                                 <p>Parcelado</p>
@@ -157,7 +172,7 @@
                             else
                             {
                                 <p>A vista</p>
-                            }
+                            } *@
                         </td>
                         <td>
                             @if (item.Status == 1)

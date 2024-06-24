@@ -1,38 +1,52 @@
 ﻿function FinalizarCompra() {
 
-    if(ValidacaoVenda()){
+    if (ValidacaoVenda()) {
         $("#modal_finalizacao").modal('show');
         FormaPagamento();
     }
-    
+
 };
 
 function FormaPagamento() {
 
     let tipo = $("#TipoFormaPagamento").val();
-
-    if (tipo == 1) {
+    debugger;
+    if (tipo == 1 || tipo == 4) {
         $("#divNumeroParcelas").show();
         $("#divEntrada").show();
         $("#divTableParcelas").show();
         CalcularPrecoParcela();
-    }else{
+    }
+
+    if (tipo == 2 || tipo == 3) {
         $("#divNumeroParcelas").hide();
         $("#divEntrada").hide();
         $("#divTableParcelas").hide();
         LimparDadosModalPagamento();
     }
+
+    // if (tipo == 1) {
+    //     $("#divNumeroParcelas").show();
+    //     $("#divEntrada").show();
+    //     $("#divTableParcelas").show();
+    //     CalcularPrecoParcela();
+    // }else{
+    //     $("#divNumeroParcelas").hide();
+    //     $("#divEntrada").hide();
+    //     $("#divTableParcelas").hide();
+    //     LimparDadosModalPagamento();
+    // }
 };
 
-function CalcularPrecoParcela(){
+function CalcularPrecoParcela() {
     let nParcela = parseInt($("#NumeroParcelas").val());
-    let valorParcela = (totalCompra/nParcela);
+    let valorParcela = (totalCompra / nParcela);
     let data = new Date(GetData());
 
     $("#tbodyParcelas").empty();
 
     for (let index = 1; index <= nParcela; index++) {
-        
+
         let dataParcela = new Date(GetData());
         dataParcela.setMonth(dataParcela.getMonth() + index);
 
@@ -47,25 +61,25 @@ function CalcularPrecoParcela(){
     }
 };
 
-function GetData(){
+function GetData() {
     return $("#DataCompra").val();
 };
 
-function LimparDadosModalPagamento(){
+function LimparDadosModalPagamento() {
     $("#divTableParcelas").hide();
     $("#tbodyParcelas").empty();
     $("#divNumeroParcelas").hide();
     $("#divEntrada").hide();
     $("#NumeroParcelas").val(1)
-    $("#TipoFormaPagamento").val(2)
+    // $("#TipoFormaPagamento").val(2)
     $("#ValorEntrada").val('0,00')
 };
 
-function RefazerValorTotal(){
+function RefazerValorTotal() {
 
     totalCompra = totalCompra2;
-    let valor = $("#ValorEntrada").val().replace(".","");
-    valor = valor.replace(",",".");
+    let valor = $("#ValorEntrada").val().replace(".", "");
+    valor = valor.replace(",", ".");
     valor = parseFloat(valor);
 
     totalCompra = totalCompra - valor;
