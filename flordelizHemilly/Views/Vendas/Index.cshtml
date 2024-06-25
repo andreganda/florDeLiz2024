@@ -21,6 +21,20 @@
     }
 </style>
 
+
+@if (TempData["MessageSuccess"] != null)
+{
+    <div class="alert alert-custom alert-success fade show mb-5" role="alert">
+        <div class="alert-icon"><i class="flaticon-warning"></i></div>
+        <div class="alert-text"> @TempData["MessageSuccess"]</div>
+        <div class="alert-close">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true"><i class="ki ki-close"></i></span>
+            </button>
+        </div>
+    </div>
+}
+
 <h1>Lista de vendas</h1>
 
 <div class="card card-custom gutter-b">
@@ -186,14 +200,35 @@
                         </td>
 
                         <td>
-                            <a href="javascript:AbrirModalDetalharItens(@item.Id)">
+ @*                            <a href="javascript:AbrirModalDetalharItens(@item.Id)">
                                 <span class="label label-md label-success label-inline mr-2">Itens</span>
                             </a>
                             @if (item.TipoPagamento == TipoPagamento.Crediario)
                             {
                                 <a asp-controller="Parcelas" asp-action="Index" asp-route-id="@item.Id"> <span class="label label-md label-warning label-inline mr-2">Parcelas</span></a>
-                            }
-                          
+                            } *@
+
+                            <div class="dropdown">
+                                <button class="btn btn-secondary dropdown-toggle btn-sm" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                   Opções
+                                </button>
+                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                    <a href="javascript:AbrirModalDetalharItens(@item.Id)" class="dropdown-item">Itens</a>
+
+                                    @if (item.TipoPagamento == TipoPagamento.Crediario)
+                                    {
+                                        @* <a asp-controller="Parcelas" asp-action="Index" asp-route-id="@item.Id"> <span class="label label-md label-warning label-inline mr-2">Parcelas</span></a> *@
+
+                                        <a asp-controller="Parcelas" asp-action="Index" asp-route-id="@item.Id" class="dropdown-item">Parcelas</a>
+                                    
+                                    }
+
+                                    @* <a class="dropdown-item" href="#">Excluir</a> *@
+                                    <a asp-controller="Vendas" asp-action="Delete" asp-route-id="@item.Id" class="dropdown-item">Excluir</a>
+
+                                </div>
+                            </div>
+
                         </td>
 
                     </tr>

@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Authorization;
 using Newtonsoft.Json;
 using static flordelizHemilly.Controllers.ParcelasController;
 using System.Text;
+using MySqlX.XDevAPI;
 
 namespace flordelizHemilly.Controllers
 {
@@ -250,6 +251,9 @@ namespace flordelizHemilly.Controllers
                 query += $"and ClienteId = {idCliente} ";
             }
 
+            query += $"and Excluido = 0 ";
+            
+
             int lojaId = Convert.ToInt16(User.FindFirst("LojaId")?.Value);
 
             query += $" and LojaId = {lojaId}";
@@ -361,10 +365,14 @@ namespace flordelizHemilly.Controllers
             var venda = await _context.Vendas.FindAsync(id);
             if (venda != null)
             {
-                _context.Vendas.Remove(venda);
+                venda.Excluido = 1;
+                _context.Vendas.Update(venda);
             }
 
             await _context.SaveChangesAsync();
+
+            TempData["MessageSuccess"] = $"Venda excluida com sucesso!";
+
             return RedirectToAction(nameof(Index));
         }
 

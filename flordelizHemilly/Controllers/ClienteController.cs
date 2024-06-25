@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using flordelizHemilly.DataBase;
+﻿using flordelizHemilly.DataBase;
 using flordelizHemilly.Models;
 using flordelizHemilly.Service;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace flordelizHemilly.Controllers
 {
@@ -170,6 +165,7 @@ namespace flordelizHemilly.Controllers
                 try
                 {
                     var clienteBd = new Cliente();
+                    if (cliente.Email != string.Empty && cliente.Email != null)
                     if (cliente.Email != string.Empty && cliente.Email != null)
                     {
                         // Verificar se o e-mail já está em uso

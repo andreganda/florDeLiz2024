@@ -32,6 +32,7 @@ namespace flordelizHemilly.Models
         /// 1-> Compra toda paga, todas as parcelas foram pagas
         /// </summary>
         public int Status { get; set; }
+        public int Excluido { get; set; }
         public ICollection<ItemVenda> Itens { get; set; }
         public ICollection<Parcela> Parcelas { get; set; }
     }
