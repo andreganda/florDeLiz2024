@@ -6,10 +6,9 @@ jQuery(document).ready(function () {
 });
 
 function AbrirModalParcela(numeroParcela, diasVencido, valorParcela, idParcela) {
-
     var valorCorrigido = CalcularValorCorrigido(diasVencido, valorParcela);
     $("#ValorParcela").val(valorParcela);
-    $("#ValorPagamento").val(valorParcela);
+    $("#ValorPagamento").val(valorCorrigido);
     $("#DiasDeAtraso").val(diasVencido);
     $("#IdParcela").val(idParcela);
     $("#modal_parcela").modal('show');
@@ -60,8 +59,9 @@ function CalcularValorCorrigido(diasVencido, valorParcela) {
     valorJuros = valorJuros * diasVencido;
 
     let valorCorrigido = (valorJuros + parseFloat(valorParcela)).toFixed(2);
-
+    valorCorrigido = valorCorrigido.replace(".",",");
     $("#ValorCorrigido").val(valorCorrigido);
+    return valorCorrigido;
 
 };
 
@@ -167,7 +167,7 @@ function ReceberValorParcela(elemento){
     if(elemento.value == 0){
         $("#ValorPagamento").removeAttr("disabled");
     }else{
-        $("#ValorPagamento").val($("#ValorParcela").val());
+        $("#ValorPagamento").val($("#ValorCorrigido").val());
         $("#ValorPagamento").attr("disabled","disabled");
     }
 };

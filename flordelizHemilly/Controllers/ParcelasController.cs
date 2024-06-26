@@ -51,6 +51,8 @@ namespace flordelizHemilly.Controllers
             try
             {
                 var parcela = await _context.Parcelas.FirstOrDefaultAsync(m => m.Id == v.IdParcela);
+                decimal valorParcela = parcela.Valor;
+
                 var historico = JsonConvert.DeserializeObject<List<ParcelaHistorico>>(parcela.Historico);
                 var venda = await _context.Vendas.FirstOrDefaultAsync(m => m.Id == parcela.VendaId);
                 v.Valor = v.Valor.Replace(".", "");
@@ -63,59 +65,14 @@ namespace flordelizHemilly.Controllers
 
                 //se estiver vencido
                 CalculoPagamentoParcela(parcela, valorPagamento, diasVencido, juros);
+
+
                 parcela.DataPagamento = DateTime.Now;
                 parcela.Historico = HistoricoParcela(parcela, valorPagamento, dataPagamento, juros, v.Observacao);
 
                 _context.Update(parcela);
                 await _context.SaveChangesAsync();
-
-                #region DEBITO AUTOMATICO SE VALOR MAIOR QUE A PRESTAÇÃO
-                decimal valorParcela = parcela.Valor;
-                if (diasVencido > 0)
-                {
-                    valorParcela = ((parcela.Valor * (juros / 100)) * diasVencido) + parcela.Valor;
-                }
-
-                if ((valorParcela - valorPagamento) < 0)
-                {
-                    var valorRestouDaMensalidade = (valorPagamento - valorParcela);
-                    var listParcelasParaDebitoAutomatico = await _context.Parcelas.Where(m => m.VendaId == parcela.VendaId).ToListAsync();
-
-                    foreach (var parcelaExtra in listParcelasParaDebitoAutomatico)
-                    {
-                        if (!parcelaExtra.Pago && parcelaExtra.Id != v.IdParcela)
-                        {
-                            //quer dizer que o valor restante abateu por completo outra mensalidade.
-                            if ((parcelaExtra.Valor - valorRestouDaMensalidade) <= 0)
-                            {
-                                parcelaExtra.Historico = HistoricoParcela(parcelaExtra, Math.Round(parcelaExtra.Valor, 2), dataPagamento, juros, "REALIZADO AUTOMATICAMENTE COM RESTANTE DO PAGAMENTO DA PRESTAÇÃO");
-                                valorRestouDaMensalidade = valorRestouDaMensalidade - parcelaExtra.Valor;
-                                parcelaExtra.Valor = 0;
-                                parcelaExtra.Pago = true;
-                                _context.Update(parcelaExtra);
-                            }
-                            else
-                            {
-                                parcelaExtra.Historico = HistoricoParcela(parcelaExtra, Math.Round(valorRestouDaMensalidade, 2), dataPagamento, juros, "REALIZADO AUTOMATICAMENTE COM RESTANTE DO PAGAMENTO DA PRESTAÇÃO");
-                                parcelaExtra.Valor = parcelaExtra.Valor - valorRestouDaMensalidade;
-                                valorRestouDaMensalidade = valorRestouDaMensalidade - parcelaExtra.Valor;
-                                _context.Update(parcelaExtra);
-                            }
-
-                            if (valorRestouDaMensalidade <= 0)
-                                break;
-                        }
-                    }
-
-                    if (valorRestouDaMensalidade > 0)
-                    {
-                        obsPagamento = $" -------  ATENÇÃO Foi debitado todas as possiveis prestações com o dinheiro recebido, porem ainda sobrou {Math.Round(valorRestouDaMensalidade, 2).ToString()}";
-                    }
-
-                    await _context.SaveChangesAsync();
-                } 
-                #endregion
-
+ 
                 #region VERIFICANDO SE TODAS PARCELAS ESTÃO PAGAS PARA BAIXAR NA COMPRA.
                 var listaParcelasVenda = await _context.Parcelas.Where(m => m.VendaId == parcela.VendaId).ToListAsync();
                 int nParcelas = listaParcelasVenda.Count();
@@ -151,6 +108,120 @@ namespace flordelizHemilly.Controllers
                 return m;
             }
         }
+
+        //[HttpPost]
+        //public async Task<Mensagem> EfetuarPagamento(PagamentoParcelaViewModel v)
+        //{
+        //    var m = new Mensagem();
+        //    string obsPagamento = "";
+        //    try
+        //    {
+        //        var parcela = await _context.Parcelas.FirstOrDefaultAsync(m => m.Id == v.IdParcela);
+        //        decimal valorParcela = parcela.Valor;
+
+        //        var historico = JsonConvert.DeserializeObject<List<ParcelaHistorico>>(parcela.Historico);
+        //        var venda = await _context.Vendas.FirstOrDefaultAsync(m => m.Id == parcela.VendaId);
+        //        v.Valor = v.Valor.Replace(".", "");
+        //        var valorPagamento = Convert.ToDecimal(v.Valor.Replace(".", ","));
+
+        //        var dataPagamento = Convert.ToDateTime(v.DataPagamento);
+        //        var diasVencido = Convert.ToInt32(DateTime.Now.Date.Subtract(parcela.DataVencimento.Date).TotalDays);
+
+        //        var juros = Convert.ToDecimal(v.Juros.Replace(".", ","));
+
+        //        //se estiver vencido
+        //        CalculoPagamentoParcela(parcela, valorPagamento, diasVencido, juros);
+
+
+        //        parcela.DataPagamento = DateTime.Now;
+        //        parcela.Historico = HistoricoParcela(parcela, valorPagamento, dataPagamento, juros, v.Observacao);
+
+        //        _context.Update(parcela);
+        //        await _context.SaveChangesAsync();
+
+        //        #region DEBITO AUTOMATICO SE VALOR MAIOR QUE A PRESTAÇÃO
+
+        //        if (diasVencido > 0)
+        //        {
+        //            valorParcela = Math.Round(((valorParcela * (juros / 100)) * diasVencido) + parcela.Valor,2);
+        //        }
+
+        //        if ((valorParcela - valorPagamento) < 0)
+        //        {
+        //            var valorRestouDaMensalidade = Math.Round((valorPagamento - valorParcela),2);
+
+        //            var listParcelasParaDebitoAutomatico = await _context.Parcelas.Where(m => m.VendaId == parcela.VendaId).ToListAsync();
+
+        //            foreach (var parcelaExtra in listParcelasParaDebitoAutomatico)
+        //            {
+        //                if (!parcelaExtra.Pago && parcelaExtra.Id != v.IdParcela)
+        //                {
+        //                    //quer dizer que o valor restante abateu por completo outra mensalidade.
+        //                    if ((parcelaExtra.Valor - valorRestouDaMensalidade) <= 0)
+        //                    {
+        //                        parcelaExtra.Historico = HistoricoParcela(parcelaExtra, Math.Round(parcelaExtra.Valor, 2), dataPagamento, juros, "REALIZADO AUTOMATICAMENTE COM RESTANTE DO PAGAMENTO DA PRESTAÇÃO");
+        //                        valorRestouDaMensalidade = valorRestouDaMensalidade - parcelaExtra.Valor;
+        //                        parcelaExtra.Valor = 0;
+        //                        parcelaExtra.Pago = true;
+        //                        _context.Update(parcelaExtra);
+        //                    }
+        //                    else
+        //                    {
+        //                        parcelaExtra.Historico = HistoricoParcela(parcelaExtra, Math.Round(valorRestouDaMensalidade, 2), dataPagamento, juros, "REALIZADO AUTOMATICAMENTE COM RESTANTE DO PAGAMENTO DA PRESTAÇÃO");
+        //                        parcelaExtra.Valor = parcelaExtra.Valor - valorRestouDaMensalidade;
+        //                        valorRestouDaMensalidade = valorRestouDaMensalidade - parcelaExtra.Valor;
+        //                        _context.Update(parcelaExtra);
+        //                    }
+
+        //                    if (valorRestouDaMensalidade <= 0)
+        //                        break;
+        //                }
+        //            }
+
+        //            if (valorRestouDaMensalidade > 0)
+        //            {
+        //                obsPagamento = $" -------  ATENÇÃO Foi debitado todas as possiveis prestações com o dinheiro recebido, porem ainda sobrou {Math.Round(valorRestouDaMensalidade, 2).ToString()}";
+        //            }
+
+        //            await _context.SaveChangesAsync();
+        //        } 
+        //        #endregion
+
+        //        #region VERIFICANDO SE TODAS PARCELAS ESTÃO PAGAS PARA BAIXAR NA COMPRA.
+        //        var listaParcelasVenda = await _context.Parcelas.Where(m => m.VendaId == parcela.VendaId).ToListAsync();
+        //        int nParcelas = listaParcelasVenda.Count();
+        //        int parcelasPagas = 0;
+        //        foreach (var item in listaParcelasVenda)
+        //        {
+        //            if (item.Pago)
+        //            {
+        //                parcelasPagas++;
+        //            }
+        //        }
+
+        //        if (nParcelas == parcelasPagas)
+        //        {
+        //            venda.Status = 1;
+
+        //            _context.Update(venda);
+        //            await _context.SaveChangesAsync();
+        //        }
+        //        #endregion
+
+
+        //        m.Status = 1;
+        //        m.Descricao = $"Pagamento de parcela realizado com sucesso. {obsPagamento}";
+
+        //        return m;
+        //    }
+        //    catch (Exception ex)
+        //    {
+
+        //        m.Status = 0;
+        //        m.Descricao = ex.Message.ToString();
+        //        return m;
+        //    }
+        //}
 
         public string HistoricoParcela(Parcela parcela, decimal valorPagamento, DateTime dataPagamento, decimal juros, string observacao)
         {
@@ -207,6 +278,7 @@ namespace flordelizHemilly.Controllers
                 if (valorPagamento >= valorParcela)
                 {
                     parcela.Pago = true;
+                    parcela.Valor = 0;
                 }
                 else
                 {
@@ -215,13 +287,14 @@ namespace flordelizHemilly.Controllers
             }
             else
             {
-                if (valorPagamento >= Math.Round(parcela.Valor, 2))
+                if (valorPagamento >= parcela.Valor)
                 {
                     parcela.Pago = true;
+                    parcela.Valor = 0;
                 }
                 else
                 {
-                    parcela.Valor -= valorPagamento;
+                    parcela.Valor = Math.Round(parcela.Valor - valorPagamento,2);
                 }
             }
         }

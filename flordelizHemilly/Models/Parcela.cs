@@ -11,5 +11,10 @@
         public bool Pago { get; set; }
         public Venda Venda { get; set; }
         public string Historico { get; set; }
+
+        public decimal ValorRound2()
+        {
+            return Math.Round(Valor,2);
+        }
     }
 }
