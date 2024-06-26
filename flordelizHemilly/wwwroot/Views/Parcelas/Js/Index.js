@@ -5,15 +5,52 @@ jQuery(document).ready(function () {
     SetDataHoje();
 });
 
-function AbrirModalParcela(numeroParcela, diasVencido, valorParcela, idParcela) {
+function AbrirModalParcela(numeroParcela, diasVencido, valorParcela, idParcela,dtVencimento) {
     var valorCorrigido = CalcularValorCorrigido(diasVencido, valorParcela);
     $("#ValorParcela").val(valorParcela);
     $("#ValorPagamento").val(valorCorrigido);
     $("#DiasDeAtraso").val(diasVencido);
     $("#IdParcela").val(idParcela);
+    $("#dtVencimentoParcela").val(dtVencimento);
     $("#modal_parcela").modal('show');
-
 };
+
+function DataPagamentoChange(){
+    let dt1 = $("#dtVencimentoParcela").val();
+    let dt2 =  $("#DataPagamento").val();
+    let diasVencido = DiferencaEmDias(dt1,dt2);
+    let valorParcela = $("#ValorParcela").val();
+
+    if(diasVencido>0){
+        $("#DiasDeAtraso").val(diasVencido);
+    }else{
+        $("#DiasDeAtraso").val(0);
+        diasVencido = 0;
+    }
+
+    CalcularValorCorrigido(diasVencido, valorParcela);
+};
+
+function DiferencaEmDias(data1, data2) {
+    var partes1 = data1.split("/");
+    var ano1 = partes1[2];
+    var mes1 = partes1[1] - 1;
+    var dia1 = partes1[0];
+
+    var partes2 = data2.split("-");
+    var ano2 = partes2[0];
+    var mes2 = partes2[1] - 1;
+    var dia2 = partes2[2];
+
+    const dataInicio = new Date(ano1, mes1, dia1);
+    const dataFim = new Date(ano2, mes2, dia2);
+
+    const diferencaEmMilissegundos = dataFim - dataInicio;
+
+    const diferencaEmDias = diferencaEmMilissegundos / (1000 * 60 * 60 * 24);
+
+    return diferencaEmDias;
+}
 
 function FormatarMoeda(i) {
     var v = i.value.replace(/\D/g, '');
@@ -46,7 +83,6 @@ function SetDataHoje() {
 };
 
 function CalcularValorCorrigido(diasVencido, valorParcela) {
-
     let juros = $("#ValorJuros").val().replace(".", "");
     juros = juros.replace(",", ".");
     juros = parseFloat(juros);
@@ -61,8 +97,9 @@ function CalcularValorCorrigido(diasVencido, valorParcela) {
     let valorCorrigido = (valorJuros + parseFloat(valorParcela)).toFixed(2);
     valorCorrigido = valorCorrigido.replace(".",",");
     $("#ValorCorrigido").val(valorCorrigido);
-    return valorCorrigido;
+    $("#ValorPagamento").val(valorCorrigido);
 
+    return valorCorrigido;
 };
 
 function CalcularValorCorrigidoChange() {

@@ -59,7 +59,11 @@ namespace flordelizHemilly.Controllers
                 var valorPagamento = Convert.ToDecimal(v.Valor.Replace(".", ","));
 
                 var dataPagamento = Convert.ToDateTime(v.DataPagamento);
-                var diasVencido = Convert.ToInt32(DateTime.Now.Date.Subtract(parcela.DataVencimento.Date).TotalDays);
+
+
+                var diasVencido = Convert.ToInt32(dataPagamento.Subtract(parcela.DataVencimento.Date).TotalDays);
+
+
 
                 var juros = Convert.ToDecimal(v.Juros.Replace(".", ","));
 
@@ -415,6 +419,10 @@ namespace flordelizHemilly.Controllers
 
             return View(parcela);
         }
+        
+
+        //TODO - falta fazer a exclusão do pagamento, caso seja lançado errado.
+        //fazer tipo um undo do pagamento. 
 
         // POST: Parcelas/Delete/5
         [HttpPost, ActionName("Delete")]
