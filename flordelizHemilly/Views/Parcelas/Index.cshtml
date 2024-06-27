@@ -142,7 +142,7 @@
 
                             <div class="col-lg-4">
                                 <label class="control-label"> Valor pagamento cliente: </label>
-                                <input type="text" value="0,00" class="form-control" id="ValorPagamento" disabled="disabled" onkeyup="FormatarMoeda(this);">
+                                <input type="text" value="0,00" class="form-control" id="ValorPagamento" disabled="disabled" onkeyup="FormatarMoeda(this);ValidarValorEntrada(this);">
                             </div>
                             <div class="col-lg-4">
                                 <div class="form-group">
@@ -234,6 +234,6 @@
 
 @section Scripts {
     @{
-        <script src="/Views/Parcelas/Js/Index.js?v=1.0.2"></script>
+        <script src="/Views/Parcelas/Js/Index.js?v=1.0.3"></script>
     }
 }

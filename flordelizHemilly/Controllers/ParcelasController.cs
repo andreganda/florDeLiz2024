@@ -51,28 +51,26 @@ namespace flordelizHemilly.Controllers
             try
             {
                 var parcela = await _context.Parcelas.FirstOrDefaultAsync(m => m.Id == v.IdParcela);
+
                 decimal valorParcela = parcela.Valor;
+
 
                 var historico = JsonConvert.DeserializeObject<List<ParcelaHistorico>>(parcela.Historico);
                 var venda = await _context.Vendas.FirstOrDefaultAsync(m => m.Id == parcela.VendaId);
                 v.Valor = v.Valor.Replace(".", "");
                 var valorPagamento = Convert.ToDecimal(v.Valor.Replace(".", ","));
-
                 var dataPagamento = Convert.ToDateTime(v.DataPagamento);
-
-
                 var diasVencido = Convert.ToInt32(dataPagamento.Subtract(parcela.DataVencimento.Date).TotalDays);
-
-
-
                 var juros = Convert.ToDecimal(v.Juros.Replace(".", ","));
+
 
                 //se estiver vencido
                 CalculoPagamentoParcela(parcela, valorPagamento, diasVencido, juros);
 
 
-                parcela.DataPagamento = DateTime.Now;
-                parcela.Historico = HistoricoParcela(parcela, valorPagamento, dataPagamento, juros, v.Observacao);
+                parcela.DataPagamento = dataPagamento;
+                parcela.Historico = HistoricoParcela(parcela, valorPagamento, dataPagamento, juros, v.Observacao, valorParcela);
+
 
                 _context.Update(parcela);
                 await _context.SaveChangesAsync();
@@ -227,7 +225,7 @@ namespace flordelizHemilly.Controllers
         //    }
         //}
 
-        public string HistoricoParcela(Parcela parcela, decimal valorPagamento, DateTime dataPagamento, decimal juros, string observacao)
+        public string HistoricoParcela(Parcela parcela, decimal valorPagamento, DateTime dataPagamento, decimal juros, string observacao, decimal valorParcela)
         {
             var historico = JsonConvert.DeserializeObject<List<ParcelaHistorico>>(parcela.Historico);
 
@@ -238,14 +236,15 @@ namespace flordelizHemilly.Controllers
                                 new ParcelaHistorico { Valor = valorPagamento.ToString(),
                                 DataPagamento = dataPagamento.ToShortDateString(),
                                 Juros = juros.ToString(),
-                                Observacao = observacao
+                                Observacao = observacao,
+                                ValorAntigo = valorParcela
                                 }
                                 };
                 return JsonConvert.SerializeObject(listH, Formatting.Indented);
             }
             else
             {
-                historico.Add(new ParcelaHistorico { Valor = valorPagamento.ToString(), DataPagamento = dataPagamento.ToShortDateString(), Juros = juros.ToString(), Observacao = observacao });
+                historico.Add(new ParcelaHistorico { Valor = valorPagamento.ToString(), DataPagamento = dataPagamento.ToShortDateString(), Juros = juros.ToString(), Observacao = observacao, ValorAntigo = valorParcela });
                 return JsonConvert.SerializeObject(historico, Formatting.Indented);
             }
         }
@@ -258,17 +257,81 @@ namespace flordelizHemilly.Controllers
 
             var sb = new StringBuilder();
 
+            int cont = 1;
             foreach (var item in historico)
             {
-                sb.Append($"<tr>" +
-                    $"<td>{item.DataPagamento}</td>" +
-                    $"<td>{item.Valor}</td>" +
-                    $"<td>{item.Juros}</td>" +
-                    $"<td>{item.Observacao}</td>" +
-                    $"</tr>");
+
+                if (cont == historico.Count)
+                {
+                    sb.Append($"<tr>" +
+                  $"<td>{item.DataPagamento}</td>" +
+                  $"<td>{item.Valor}</td>" +
+                  $"<td>{item.Juros}</td>" +
+                  $"<td>{item.Observacao}</td>" +
+                  $"<td>" +
+                  $"<a href='javascript:ReverterPagamento({idParcela});'> <span class='label label-success label-inline mr-2' style='color:black; font-weight:bold'>Reverter pagamento</span> </a>" +
+                  $"</td>" +
+                  $"</tr>");
+                }
+                else
+                {
+                    sb.Append($"<tr>" +
+                        $"<td>{item.DataPagamento}</td>" +
+                        $"<td>{item.Valor}</td>" +
+                        $"<td>{item.Juros}</td>" +
+                        $"<td>{item.Observacao}</td>" +
+                        $"<td></td>" +
+                        $"</tr>");
+                }
+
+
+                cont++;
             }
 
             return sb.ToString();
+
+        }
+
+        [HttpGet]
+        public async Task<Mensagem> ReverterPagamento(int idParcela)
+        {
+            var m = new Mensagem();
+            try
+            {
+                var parcela = await _context.Parcelas.FirstOrDefaultAsync(m => m.Id == idParcela);
+                var historico = JsonConvert.DeserializeObject<List<ParcelaHistorico>>(parcela.Historico);
+
+                var ultimo = historico.LastOrDefault();
+                parcela.Valor = ultimo.ValorAntigo;
+                if (parcela.Valor != 0)
+                {
+                    parcela.Pago = false;
+
+                    int lastIndex = historico.Count - 1;
+                    historico.RemoveAt(lastIndex);
+
+                    parcela.Historico = JsonConvert.SerializeObject(historico, Formatting.Indented);
+
+                    _context.Update(parcela);
+                    _context.SaveChanges();
+
+                    m.Status = 1;
+                    m.Descricao = "Parcela restaurada com sucesso.";
+                    return m;
+                }
+                else
+                {
+                    m.Status = 0;
+                    m.Descricao = "Encontramos um problema para restaurar sua parcela, contate o administrador.";
+                    return m;
+                }
+            }
+            catch (Exception)
+            {
+                m.Status = 0;
+                m.Descricao = "Encontramos um problema para restaurar sua parcela, contate o administrador.";
+                return m;
+            }
 
         }
 
@@ -460,6 +523,7 @@ namespace flordelizHemilly.Controllers
             public string? Valor { get; set; }
             public string? Juros { get; set; }
             public string? Observacao { get; set; }
+            public decimal ValorAntigo { get; set; }
 
         }
     }

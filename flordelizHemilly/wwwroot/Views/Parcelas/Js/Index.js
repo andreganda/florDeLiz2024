@@ -208,3 +208,66 @@ function ReceberValorParcela(elemento){
         $("#ValorPagamento").attr("disabled","disabled");
     }
 };
+
+function ValidarValorEntrada(elemento){
+    let valorCorrigidoSemAlteracao  = $("#ValorCorrigido").val()
+    let valorCorrigido  = $("#ValorCorrigido").val().replaceAll(".","").replaceAll(",","");
+    let valorCliente = elemento.value.replaceAll(".","").replaceAll(",","");
+
+    valorCorrigido = parseInt(valorCorrigido);
+    valorCliente = parseInt(valorCliente);
+
+    if(valorCliente>valorCorrigido){
+        $("#ValorPagamento").val(valorCorrigidoSemAlteracao);
+    }
+};
+
+function ReverterPagamento(idParcela){
+    let param = {};
+    param.idParcela = idParcela;
+
+    $.ajax({
+        type: "GET",
+        url: "/Parcelas/ReverterPagamento",
+        data: param,
+        success: function (msg) {
+
+            if (msg.status == 1) {
+                Swal.fire({
+                    title: "Eba",
+                    text: msg.descricao,
+                    icon: "success",
+                    confirmButtonText: "OK!",
+                    allowOutsideClick: false,  // Evita que o alerta seja fechado ao clicar fora dele
+                    allowEscapeKey: false,     // Evita que o alerta seja fechado ao pressionar a tecla "Escape"
+                    allowEnterKey: false       // Evita que o alerta seja fechado ao pressionar a tecla "Enter"
+                }).then(function (result) {
+                    if (result.value) {
+
+                        location.reload();
+                    }
+                });
+
+            }else{
+                Swal.fire({
+                    title: "Opsss",
+                    text: msg.descricao,
+                    icon: "error",
+                    confirmButtonText: "OK!",
+                    allowOutsideClick: false,  // Evita que o alerta seja fechado ao clicar fora dele
+                    allowEscapeKey: false,     // Evita que o alerta seja fechado ao pressionar a tecla "Escape"
+                    allowEnterKey: false       // Evita que o alerta seja fechado ao pressionar a tecla "Enter"
+                }).then(function (result) {
+                    if (result.value) {
+
+                        location.reload();
+                    }
+                });  
+            }
+
+        },
+        error: function (response) {
+            alert(response);
+        }
+    });
+};
