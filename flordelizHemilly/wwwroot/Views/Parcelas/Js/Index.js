@@ -214,8 +214,8 @@ function ValidarValorEntrada(elemento){
     let valorCorrigido  = $("#ValorCorrigido").val().replaceAll(".","").replaceAll(",","");
     let valorCliente = elemento.value.replaceAll(".","").replaceAll(",","");
 
-    valorCorrigido = parseInt(valorCorrigido);
-    valorCliente = parseInt(valorCliente);
+    valorCorrigido = parseFloat(valorCorrigido);
+    valorCliente = parseFloat(valorCliente);
 
     if(valorCliente>valorCorrigido){
         $("#ValorPagamento").val(valorCorrigidoSemAlteracao);
