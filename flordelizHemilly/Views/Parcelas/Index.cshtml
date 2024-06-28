@@ -15,7 +15,7 @@
 <h4>Data Venda: @venda.DataDaVenda.ToShortDateString()</h4>
 <h4>Protocolo venda: @venda.Id </h4>
 
-<input type="hidden" value="" id="IdParcela"/>
+<input type="hidden" value="" id="IdParcela" />
 
 <div class="card card-custom gutter-b">
     <div class="card-header">
@@ -34,7 +34,7 @@
                         @Html.DisplayNameFor(model => model.NumeroParcela)
                     </th>
                     <th>
-                          Valor Restante
+                        Valor Restante
                     </th>
                     <th>
                         @Html.DisplayNameFor(model => model.DataVencimento)
@@ -64,17 +64,26 @@
                                 {
                                     diasVencido = dtAtual.Date.Subtract(item.DataVencimento.Date).TotalDays;
                                     <span>&nbsp;&nbsp;</span>
-                                    <span class="label label-xl label-dot label-danger"></span> <span style="font-weight:bold">@diasVencido dias</span>
+                                    @if (@diasVencido <= 10)
+                                    {
+                                        <span class="label label-xl label-dot label-warning"></span> <span style="font-weight:bold">@diasVencido dias</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="label label-xl label-dot label-danger"></span> <span style="font-weight:bold">@diasVencido dias</span>
+                                    }
                                 }
                             </p>
                         </td>
                         <td>
-                            @if(!item.Pago){
+                            @if (!item.Pago)
+                            {
                                 <a href="javascript:AbrirModalParcela(@item.NumeroParcela, @diasVencido,'@Math.Round(item.Valor,2)',@item.Id, '@item.DataVencimento.ToShortDateString()');">
                                     <span class="label label-warning label-inline mr-2" style="color:black; font-weight:bold">Receber</span>
                                 </a>
                             }
-                            @if(item.Historico != ""){
+                            @if (item.Historico != "")
+                            {
                                 <a href="javascript:AbrirModalDetalhesParcela(@item.Id);">
                                     <span class="label label-success label-inline mr-2" style="color:black; font-weight:bold">Detalhes</span>
                                 </a>
@@ -102,7 +111,7 @@
             <div class="modal-body">
                 <div class="row">
                     <div class="col-md-12">
-                        <input type="hidden" id="dtVencimentoParcela"/>
+                        <input type="hidden" id="dtVencimentoParcela" />
                         <div class="form-group row">
                             <div class="col-lg-3">
                                 <label>% de juros atraso</label>
@@ -137,7 +146,7 @@
                         <div class="form-group row">
                             <div class="col-lg-4">
                                 <label class="control-label"> Data pagamento: </label>
-                                <input type="date" value="1" class="form-control" id="DataPagamento" onchange="DataPagamentoChange();" >
+                                <input type="date" value="1" class="form-control" id="DataPagamento" onchange="DataPagamentoChange();">
                             </div>
 
                             <div class="col-lg-4">
@@ -219,8 +228,6 @@
                         </tr>
                     </thead>
                     <tbody id="tbodyDetalhesPagamento">
-                          
-                        
                     </tbody>
                 </table>
             </div>
@@ -234,6 +241,6 @@
 
 @section Scripts {
     @{
-        <script src="/Views/Parcelas/Js/Index.js?v=1.0.4"></script>
+        <script src="/Views/Parcelas/Js/Index.js?v=1.0.5"></script>
     }
 }

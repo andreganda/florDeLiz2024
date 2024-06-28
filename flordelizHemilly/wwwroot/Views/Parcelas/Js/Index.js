@@ -5,7 +5,13 @@ jQuery(document).ready(function () {
     SetDataHoje();
 });
 
-function AbrirModalParcela(numeroParcela, diasVencido, valorParcela, idParcela,dtVencimento) {
+function AbrirModalParcela(numeroParcela, diasVencido, valorParcela, idParcela, dtVencimento) {
+
+    //só começa a contar juros a partir do dia 11.
+    if (diasVencido <= 10) {
+        diasVencido = 0;
+    }
+
     var valorCorrigido = CalcularValorCorrigido(diasVencido, valorParcela);
     $("#ValorParcela").val(valorParcela);
     $("#ValorPagamento").val(valorCorrigido);
@@ -15,15 +21,15 @@ function AbrirModalParcela(numeroParcela, diasVencido, valorParcela, idParcela,d
     $("#modal_parcela").modal('show');
 };
 
-function DataPagamentoChange(){
+function DataPagamentoChange() {
     let dt1 = $("#dtVencimentoParcela").val();
-    let dt2 =  $("#DataPagamento").val();
-    let diasVencido = DiferencaEmDias(dt1,dt2);
+    let dt2 = $("#DataPagamento").val();
+    let diasVencido = DiferencaEmDias(dt1, dt2);
     let valorParcela = $("#ValorParcela").val();
 
-    if(diasVencido>0){
+    if (diasVencido > 0) {
         $("#DiasDeAtraso").val(diasVencido);
-    }else{
+    } else {
         $("#DiasDeAtraso").val(0);
         diasVencido = 0;
     }
@@ -95,7 +101,7 @@ function CalcularValorCorrigido(diasVencido, valorParcela) {
     valorJuros = valorJuros * diasVencido;
 
     let valorCorrigido = (valorJuros + parseFloat(valorParcela)).toFixed(2);
-    valorCorrigido = valorCorrigido.replace(".",",");
+    valorCorrigido = valorCorrigido.replace(".", ",");
     $("#ValorCorrigido").val(valorCorrigido);
     $("#ValorPagamento").val(valorCorrigido);
 
@@ -200,29 +206,29 @@ function AbrirModalDetalhesParcela(idParcela) {
     });
 };
 
-function ReceberValorParcela(elemento){
-    if(elemento.value == 0){
+function ReceberValorParcela(elemento) {
+    if (elemento.value == 0) {
         $("#ValorPagamento").removeAttr("disabled");
-    }else{
+    } else {
         $("#ValorPagamento").val($("#ValorCorrigido").val());
-        $("#ValorPagamento").attr("disabled","disabled");
+        $("#ValorPagamento").attr("disabled", "disabled");
     }
 };
 
-function ValidarValorEntrada(elemento){
-    let valorCorrigidoSemAlteracao  = $("#ValorCorrigido").val()
-    let valorCorrigido  = $("#ValorCorrigido").val().replaceAll(".","").replaceAll(",","");
-    let valorCliente = elemento.value.replaceAll(".","").replaceAll(",","");
+function ValidarValorEntrada(elemento) {
+    let valorCorrigidoSemAlteracao = $("#ValorCorrigido").val()
+    let valorCorrigido = $("#ValorCorrigido").val().replaceAll(".", "").replaceAll(",", "");
+    let valorCliente = elemento.value.replaceAll(".", "").replaceAll(",", "");
 
     valorCorrigido = parseFloat(valorCorrigido);
     valorCliente = parseFloat(valorCliente);
 
-    if(valorCliente>valorCorrigido){
+    if (valorCliente > valorCorrigido) {
         $("#ValorPagamento").val(valorCorrigidoSemAlteracao);
     }
 };
 
-function ReverterPagamento(idParcela){
+function ReverterPagamento(idParcela) {
     let param = {};
     param.idParcela = idParcela;
 
@@ -248,7 +254,7 @@ function ReverterPagamento(idParcela){
                     }
                 });
 
-            }else{
+            } else {
                 Swal.fire({
                     title: "Opsss",
                     text: msg.descricao,
@@ -262,7 +268,7 @@ function ReverterPagamento(idParcela){
 
                         location.reload();
                     }
-                });  
+                });
             }
 
         },
