@@ -63,6 +63,10 @@ namespace flordelizHemilly.Controllers
                 var diasVencido = Convert.ToInt32(dataPagamento.Subtract(parcela.DataVencimento.Date).TotalDays);
                 var juros = Convert.ToDecimal(v.Juros.Replace(".", ","));
 
+                if (diasVencido <= 10)
+                {
+                    diasVencido = 0;
+                }
 
                 //se estiver vencido
                 CalculoPagamentoParcela(parcela, valorPagamento, diasVencido, juros);

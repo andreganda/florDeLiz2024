@@ -28,6 +28,12 @@ function DataPagamentoChange() {
     let valorParcela = $("#ValorParcela").val();
 
     if (diasVencido > 0) {
+        if (diasVencido <= 10) {
+            $("#DiasDeAtraso").val(0);
+            diasVencido = 0;
+        } else {
+            $("#DiasDeAtraso").val(diasVencido);
+        }
         $("#DiasDeAtraso").val(diasVencido);
     } else {
         $("#DiasDeAtraso").val(0);
