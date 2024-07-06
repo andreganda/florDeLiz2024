@@ -10,11 +10,12 @@
 function FormaPagamento() {
 
     let tipo = $("#TipoFormaPagamento").val();
-    debugger;
+
     if (tipo == 1 || tipo == 4) {
         $("#divNumeroParcelas").show();
         $("#divEntrada").show();
         $("#divTableParcelas").show();
+        $("#divPorcentagemAvista").hide();
         CalcularPrecoParcela();
     }
 
@@ -22,6 +23,8 @@ function FormaPagamento() {
         $("#divNumeroParcelas").hide();
         $("#divEntrada").hide();
         $("#divTableParcelas").hide();
+        $("#divPorcentagemAvista").show();
+
         LimparDadosModalPagamento();
     }
 
@@ -87,3 +90,39 @@ function RefazerValorTotal() {
     CalcularPrecoParcela();
 
 };
+
+function CalcularDescontoAVista() {
+    let juros = $("#ValorPorcentagemAVista").val().replace(".", "");
+    juros = juros.replace(",", ".");
+    juros = parseFloat(juros);
+
+    let valorJuros = totalCompra2 * (juros / 100);
+    valorJuros = parseFloat(totalCompra2 - valorJuros).toFixed(2);
+
+    if (juros != 0) {
+        $("#h4Desconto").show();
+    } else {
+        $("#h4Desconto").hide();
+    }
+
+    $("#h4TotalCompraComDesconto").text(valorJuros);
+};
+
+function CalcularEntrada() {
+
+    let valor = $("#ValorEntrada").val().replace(".", "");
+    valor = valor.replace(",", ".");
+    valor = parseFloat(valor);
+
+    let t = (totalCompra2 - valor).toFixed(2);
+
+    if (valor != 0) {
+        $("#h4RestaPrestacao").show();
+    } else {
+        $("#h4RestaPrestacao").hide();
+    }
+
+    $("#h4ValorQueSeraDividido").text(t);
+    
+};
+

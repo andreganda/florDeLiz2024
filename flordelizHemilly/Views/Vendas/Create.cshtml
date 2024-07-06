@@ -161,7 +161,14 @@
                             <div class="col-lg-6" style="display:none" id="divEntrada">
                                 <label>Entrada:</label>
                                 <div class="input-group">
-                                    <input type="text" class="form-control" id="ValorEntrada" value="0,00" onkeyup="FormatarMoeda(this); RefazerValorTotal();">
+                                    <input type="text" class="form-control" id="ValorEntrada" value="0,00" onkeyup="FormatarMoeda(this); RefazerValorTotal();CalcularEntrada();">
+                                </div>
+                                <span class="form-text text-muted">Entrada para abater nas parcelas</span>
+                            </div>
+                            <div class="col-lg-6" style="display:none" id="divPorcentagemAvista">
+                                <label>Porcentagem desconto a vista:</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="ValorPorcentagemAVista" value="0,00" onkeyup="FormatarMoeda(this); CalcularDescontoAVista();">
                                 </div>
                                 <span class="form-text text-muted">Entrada para abater nas parcelas</span>
                             </div>
@@ -176,7 +183,9 @@
 
                         <div class="row">
                             <div class="col-md-12">
-                                <h4 style="text-align:center" id="h4TotalCompra"> </h4>
+                                <h4> Total da compra: <span id="h4TotalCompra"></span> </h4>
+                                <h4 id="h4Desconto" style="display:none;"> Total da compra com desconto: <span id="h4TotalCompraComDesconto"></span> </h4>
+                                <h4 id="h4RestaPrestacao" style="display:none;"> Valor que sera dividido: <span id="h4ValorQueSeraDividido"></span> </h4>
                             </div>
                         </div>
 
