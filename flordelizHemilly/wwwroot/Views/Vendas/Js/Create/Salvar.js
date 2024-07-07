@@ -12,6 +12,7 @@
     let entrada = $("#ValorEntrada").val();
     let tipoPagamento = $("#TipoFormaPagamento").val();
     let observacao = $("#Observacao").val();
+    let juroDesconto = $("#ValorPorcentagemAVista").val();
 
     // Obtém os dados do formulário
     var formData = {
@@ -22,7 +23,8 @@
         Entrada: entrada,
         TipoFormaPagamento: tipoPagamento,
         ItensVenda: GetListaProdutos(),
-        Observacao: observacao
+        Observacao: observacao,
+        JuroDesconto = juroDesconto
     };
     
     $.ajax({

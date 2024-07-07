@@ -20,6 +20,7 @@ function FormaPagamento() {
     }
 
     if (tipo == 2 || tipo == 3) {
+        $("#ValorPorcentagemAVista").val("0,00");
         $("#divNumeroParcelas").hide();
         $("#divEntrada").hide();
         $("#divTableParcelas").hide();
@@ -102,6 +103,7 @@ function CalcularDescontoAVista() {
     if (juros != 0) {
         $("#h4Desconto").show();
     } else {
+        $("#ValorPorcentagemAVista").val("0,00");
         $("#h4Desconto").hide();
     }
 
@@ -123,6 +125,6 @@ function CalcularEntrada() {
     }
 
     $("#h4ValorQueSeraDividido").text(t);
-    
+
 };
 

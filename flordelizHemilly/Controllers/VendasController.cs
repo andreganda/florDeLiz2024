@@ -389,7 +389,7 @@ namespace flordelizHemilly.Controllers
             public int ClienteId { get; set; }
             public int NumeroParcelas { get; set; }
             public string Total { get; set; }
-            public string TotalDesconto { get; set; }
+            public string JuroDesconto { get; set; }
             public string Entrada { get; set; }
             public string Observacao { get; set; }
             public int TipoFormaPagamento { get; set; }

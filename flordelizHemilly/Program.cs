@@ -95,7 +95,7 @@ var contentRootPath = builder.Environment.WebRootPath;
 PathHelper.WebRootPath = app.Environment.WebRootPath;
 
 // Recurring job
-RecurringJob.AddOrUpdate("make_backup_bd", () => MonitorService.BackUpBd(connectionString, contentRootPath), Cron.HourInterval(5));
+//RecurringJob.AddOrUpdate("make_backup_bd", () => MonitorService.BackUpBd(connectionString, contentRootPath), Cron.HourInterval(5));
 
 
 app.Run();
