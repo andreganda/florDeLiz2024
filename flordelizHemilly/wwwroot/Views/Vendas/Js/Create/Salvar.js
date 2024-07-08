@@ -24,7 +24,7 @@
         TipoFormaPagamento: tipoPagamento,
         ItensVenda: GetListaProdutos(),
         Observacao: observacao,
-        JuroDesconto = juroDesconto
+        JuroDesconto: juroDesconto
     };
     
     $.ajax({

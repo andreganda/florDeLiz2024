@@ -95,6 +95,8 @@ namespace flordelizHemilly.Controllers
                 decimal entrada = decimal.Parse(venda.Entrada.Replace("R$", "").Trim());
                 decimal total = Convert.ToDecimal(venda.Total.Replace("R$", "").Trim());
 
+                decimal jurosDescontoAVista = Convert.ToDecimal(venda.JuroDesconto);
+
                 var novaVenda = new Venda();
                 novaVenda.Entrada = entrada;
                 novaVenda.Total = total;
@@ -108,6 +110,28 @@ namespace flordelizHemilly.Controllers
                 if (venda.TipoFormaPagamento == (int)TipoPagamento.AVista ||
                     venda.TipoFormaPagamento == (int)TipoPagamento.CartaoDebito)
                 {
+
+                    if (jurosDescontoAVista != Convert.ToDecimal("0.00"))
+                    {
+                        var desconto = Math.Round((total * (jurosDescontoAVista/100)),2);
+                        var novoTotal = total - desconto;
+                        novaVenda.Total = Math.Round(novoTotal,2);
+
+                        if (novaVenda.Observacao!=string.Empty && novaVenda.Observacao!=null)
+                        {
+                            novaVenda.Observacao += Environment.NewLine + 
+                                $"Valor real da venda: {total}."+ Environment.NewLine+ 
+                                $"Valor desconto: {desconto}." + Environment.NewLine +
+                                $"% a vista: {jurosDescontoAVista}";
+                        }
+                        else
+                        {
+                            novaVenda.Observacao = $"Valor real da venda: {total}." + Environment.NewLine +
+                               $"Valor desconto: {desconto}." + Environment.NewLine +
+                               $"% a vista: {jurosDescontoAVista}.";
+                        }
+                    }
+
                     novaVenda.NumeroParcelas = 0;
                     novaVenda.Status = 1;
                 }
